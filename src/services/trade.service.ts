@@ -15,6 +15,7 @@ import ProtossRouterABI from 'abi/protoss_router_abi.json';
 import { Contract, Abi, AccountInterface } from 'starknet';
 import { defaultProvider } from '../constants';
 import { IResponse } from 'enums/types';
+import {toBN} from "starknet/utils/number";
 import {
   DECIMAL,
   ROUTER_ADDRESS,
@@ -160,7 +161,6 @@ export const onSwapToken = async (
       },
     ]);
   } else {
-    console.log(amountIn.low, amountIn.high);
     const ret2 = await wallet.account?.execute(
       [
         {

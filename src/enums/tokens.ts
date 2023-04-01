@@ -1,4 +1,5 @@
 import { Token, ChainId } from 'protoss-exchange-sdk';
+import {DECIMAL} from "./index";
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[];
@@ -81,21 +82,21 @@ export const tokens: ChainTokenList = {
     new Token(
       ChainId.TESTNET,
       '0x058e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb',
-      6,
+      18,
       'TOA',
       'Token A'
     ),
     new Token(
       ChainId.TESTNET,
       '0x0401d06bd0e3e0d2cca6eead7bb20ec5d6ad4f48a27b2ce00e416f89cbd5d011',
-      6,
+      18,
       'TOB',
       'Token B'
     ),
     new Token(
       ChainId.TESTNET,
       '0x06f5a85cfdadca8a90f7b99c99afd992a149e853a641257db99cf50bc2093ed7',
-      6,
+      18,
       'TOC',
       'Token C'
     ),
