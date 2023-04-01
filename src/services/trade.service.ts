@@ -164,7 +164,7 @@ export const onSwapToken = async (
     const ret2 = await wallet.account?.execute(
       [
         {
-          entrypoint: 'swapTokensForExactTokens',
+          entrypoint: 'swapExactTokensForTokens',
           contractAddress: ROUTER_ADDRESS_DECIMAL,
           calldata: [
             amountIn.low,
