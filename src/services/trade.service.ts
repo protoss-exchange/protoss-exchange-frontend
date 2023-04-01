@@ -1,12 +1,30 @@
-import { ChainId, Pair, Token, TokenAmount, Trade } from 'protoss-exchange-sdk';
+import {
+  ChainId,
+  JSBI,
+  Pair,
+  SOLIDITY_TYPE_MAXIMA,
+  SolidityType,
+  Token,
+  TokenAmount,
+  Trade,
+} from 'protoss-exchange-sdk';
 import ProtossSwapPairABI from 'abi/protoss_pair_abi.json';
-import { Contract, Abi } from 'starknet';
+import ProtossERC20ABI from 'abi/protoss_erc20_abi.json';
+import { Contract, Abi, uint256, AccountInterface } from 'starknet';
 import { defaultProvider } from '../constants';
 import { IResponse } from 'enums/types';
-import { SERVER_URLS } from 'enums';
+import {
+  CONTRACT_ADDRESS,
+  ROUTER_ADDRESS,
+  ROUTER_ADDRESS_DECIMAL,
+  SERVER_URLS,
+} from 'enums';
 import axios from 'axios';
 import { tryParseAmount } from '../utils/maths';
 import { getToken } from '../utils';
+import { bnToUint256, Uint256, uint256ToBN } from 'starknet/utils/uint256';
+import { StarknetWindowObject } from 'get-starknet-core';
+
 export interface AllPairItem {
   token0: {
     address: string;
@@ -53,7 +71,6 @@ export const tradeExactIn = async (
   if (!currencyAAmount) return null;
   const currencyA = currencyAAmount.token;
   const address = Pair.getAddress(currencyA, currencyB);
-  console.log(address);
   const contract = new Contract(
     ProtossSwapPairABI as Abi,
     address,
@@ -111,3 +128,30 @@ export async function getAllPairs(chainId: ChainId) {
     throw new Error(error);
   }
 }
+
+export const onSwapToken = async (
+  wallet: StarknetWindowObject | null,
+  inputToken: Token,
+  amount: number
+) => {
+  if (!wallet) return;
+  const contract = new Contract(
+    ProtossERC20ABI as Abi,
+    inputToken.address,
+    defaultProvider
+  );
+  const UINT256_MAX = SOLIDITY_TYPE_MAXIMA[SolidityType.uint256];
+  const bn = bnToUint256(UINT256_MAX);
+  wallet.account?.execute([
+    {
+      entrypoint: 'approve',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      contractAddress: inputToken.address,
+      calldata: [
+        ROUTER_ADDRESS,
+        340282366920938463463374607431768211455,
+        340282366920938463463374607431768211455,
+      ],
+    },
+  ]);
+};
