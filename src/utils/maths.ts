@@ -1,4 +1,4 @@
-import { Token, TokenAmount, JSBI } from '10k_swap_sdk';
+import { Token, TokenAmount, JSBI } from 'protoss-exchange-sdk';
 import { parseUnits } from '@ethersproject/units';
 
 // parse scientific notation to string, like this 1e5->10000

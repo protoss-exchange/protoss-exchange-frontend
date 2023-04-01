@@ -1,4 +1,4 @@
-import { ChainId } from '10k_swap_sdk';
+import { ChainId } from 'protoss-exchange-sdk';
 
 export const ROUTER_ADDRESSES: {
   [chainId in ChainId]: string;

@@ -1,6 +1,6 @@
 import { tradeExactIn } from 'services/trade.service';
 import { tokens } from 'enums/tokens';
-import { ChainId } from '10k_swap_sdk';
+import { ChainId } from 'protoss-exchange-sdk';
 import { tryParseAmount } from 'utils/maths';
 import { useContext, useEffect, useState } from 'react';
 import { Button } from 'antd';

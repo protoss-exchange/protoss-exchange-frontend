@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token, TokenAmount, Trade } from '10k_swap_sdk';
+import { ChainId, Pair, Token, TokenAmount, Trade } from 'protoss-exchange-sdk';
 import ProtossSwapPairABI from 'abi/protoss_pair_abi.json';
 import { Contract, Abi } from 'starknet';
 import { defaultProvider } from '../constants';

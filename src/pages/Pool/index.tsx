@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AllPairItem, getAllPairs } from 'services/trade.service';
-import { ChainId } from '10k_swap_sdk';
+import { ChainId } from 'protoss-exchange-sdk';
 import { ColumnProps } from 'antd/es/table';
 import { Button, Table } from 'antd';
 import styles from './index.module.css';

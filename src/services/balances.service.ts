@@ -1,7 +1,7 @@
 import {Abi, Account, AccountInterface, Contract, Provider} from 'starknet';
 import ProtossSwapPairABI from '../abi/protoss_pair_abi.json';
 import { defaultProvider } from '../constants';
-import { JSBI } from '10k_swap_sdk';
+import { JSBI } from 'protoss-exchange-sdk';
 import { uint256ToBN } from 'starknet/utils/uint256';
 import { StarknetWindowObject } from 'get-starknet-core';
 import {CONTRACT_ADDRESS} from "enums";

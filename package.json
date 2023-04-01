@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "10k_swap_sdk": "https://github.com/YagiGo/10k_swap-sdk.git#main",
+    "protoss-exchange-sdk": "https://github.com/protoss-exchange/protoss-exchange-sdk.git#main",
     "@ant-design/icons": "^5.0.1",
     "@argent/get-starknet": "^5.3.14",
     "@testing-library/jest-dom": "^5.14.1",

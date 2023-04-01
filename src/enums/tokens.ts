@@ -1,4 +1,4 @@
-import { Token, ChainId } from '10k_swap_sdk';
+import { Token, ChainId } from 'protoss-exchange-sdk';
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[];

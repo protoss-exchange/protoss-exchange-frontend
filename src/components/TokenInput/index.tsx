@@ -1,7 +1,7 @@
 import styles from './index.module.css';
 import { Input, Select, Tooltip, Typography } from 'antd';
 import { tokens } from 'enums/tokens';
-import { ChainId } from '10k_swap_sdk';
+import { ChainId } from 'protoss-exchange-sdk';
 import { FC, useContext, useEffect, useState } from 'react';
 import { WalletContext } from '../../context/WalletContext';
 import { getBalance } from '../../services/balances.service';
