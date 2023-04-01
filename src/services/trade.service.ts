@@ -140,8 +140,6 @@ export const onSwapToken = async (
     inputToken.address,
     defaultProvider
   );
-  const UINT256_MAX = SOLIDITY_TYPE_MAXIMA[SolidityType.uint256];
-  const bn = bnToUint256(UINT256_MAX);
   wallet.account?.execute([
     {
       entrypoint: 'approve',

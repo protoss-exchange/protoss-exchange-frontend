@@ -12,7 +12,7 @@ export const getBalance = async (
 ) => {
   const contract = new Contract(
     ProtossSwapPairABI as Abi,
-    CONTRACT_ADDRESS,
+    address,
     defaultProvider
   );
   contract.connect(wallet.account as AccountInterface);

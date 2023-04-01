@@ -32,11 +32,12 @@ const TokenInput: FC<ITokenInputProps> = ({
   const [balance, setBalance] = useState(0);
   useEffect(() => {
     if (wallet) {
-      getBalance(wallet, tokens[ChainId.TESTNET][0].address).then(ret => {
+      getBalance(wallet, tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0].address).then(ret => {
+        console.log(ret)
         setBalance(Number(ret) || 0);
       });
     }
-  }, [wallet]);
+  }, [wallet, fromCurrency]);
   return (
     <>
       <div className={styles.fromCurrency}>
