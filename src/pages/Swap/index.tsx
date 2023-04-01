@@ -15,6 +15,7 @@ import styles from './index.module.css';
 import { TokenInput } from 'components';
 import { onSwapToken } from 'services/trade.service';
 import { bnToUint256 } from 'starknet/utils/uint256';
+import { DECIMAL } from '../../enums';
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState('TOA');
@@ -68,8 +69,10 @@ const Swap = () => {
   const swapToken = () => {
     onSwapToken(
       wallet,
+      bnToUint256(JSBI.BigInt(Number(inputValue) * DECIMAL)),
+      bnToUint256(JSBI.BigInt(outAmount * DECIMAL)),
       tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0],
-      Number(inputValue)
+      tokens[ChainId.TESTNET].filter(item => item.symbol === toCurrency)[0]
     );
   };
 

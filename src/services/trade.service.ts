@@ -10,19 +10,13 @@ import {
 } from 'protoss-exchange-sdk';
 import ProtossSwapPairABI from 'abi/protoss_pair_abi.json';
 import ProtossERC20ABI from 'abi/protoss_erc20_abi.json';
-import { Contract, Abi, uint256, AccountInterface } from 'starknet';
+import { Contract, Abi, AccountInterface } from 'starknet';
 import { defaultProvider } from '../constants';
 import { IResponse } from 'enums/types';
-import {
-  CONTRACT_ADDRESS,
-  ROUTER_ADDRESS,
-  ROUTER_ADDRESS_DECIMAL,
-  SERVER_URLS,
-} from 'enums';
+import { ROUTER_ADDRESS, SERVER_URLS } from 'enums';
 import axios from 'axios';
-import { tryParseAmount } from '../utils/maths';
 import { getToken } from '../utils';
-import { bnToUint256, Uint256, uint256ToBN } from 'starknet/utils/uint256';
+import { Uint256, uint256ToBN } from 'starknet/utils/uint256';
 import { StarknetWindowObject } from 'get-starknet-core';
 
 export interface AllPairItem {
@@ -131,25 +125,49 @@ export async function getAllPairs(chainId: ChainId) {
 
 export const onSwapToken = async (
   wallet: StarknetWindowObject | null,
-  inputToken: Token,
-  amount: number
+  amountIn: Uint256,
+  amountOutMin: Uint256,
+  fromCurrency: Token,
+  toCurrency: Token
 ) => {
   if (!wallet) return;
   const contract = new Contract(
     ProtossERC20ABI as Abi,
-    inputToken.address,
+    fromCurrency.address,
     defaultProvider
   );
-  wallet.account?.execute([
-    {
-      entrypoint: 'approve',
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      contractAddress: inputToken.address,
-      calldata: [
-        ROUTER_ADDRESS,
-        340282366920938463463374607431768211455,
-        340282366920938463463374607431768211455,
-      ],
-    },
+  const ret = await contract.call('allowance', [
+    wallet.account?.address,
+    ROUTER_ADDRESS,
   ]);
+  const bigInt = JSBI.BigInt(uint256ToBN(ret[0]));
+  if (bigInt.toString() === '0') {
+    wallet.account?.execute([
+      {
+        entrypoint: 'approve',
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        contractAddress: ROUTER_ADDRESS,
+        calldata: [
+          fromCurrency.address,
+          340282366920938463463374607431768211455,
+          340282366920938463463374607431768211455,
+        ],
+      },
+    ]);
+  } else {
+    const routerContract = new Contract(
+      ProtossERC20ABI as Abi,
+      ROUTER_ADDRESS,
+      defaultProvider
+    );
+    routerContract.connect(wallet.account as AccountInterface);
+    const ret2 = await routerContract.call('swapExactTokenForTokens', [
+      amountIn,
+      amountOutMin,
+      '2',
+      fromCurrency.address,
+      toCurrency.address,
+      Math.floor(Date.now() / 1000) + 86400,
+    ]);
+  }
 };
