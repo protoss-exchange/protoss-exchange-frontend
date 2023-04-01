@@ -10,8 +10,8 @@ const Pool = () => {
   const [liquidities, setLiquidities] = useState<IPool[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [fromCurrency, setFromCurrency] = useState('ETH');
-  const [toCurrency, setToCurrency] = useState('DAI');
+  const [fromCurrency, setFromCurrency] = useState('TOA');
+  const [toCurrency, setToCurrency] = useState('TOB');
   const [inputValue, setInputValue] = useState('');
   const [outAmount, setOutAmount] = useState(0);
 

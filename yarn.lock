@@ -8478,9 +8478,9 @@ prop-types@^15.6.2, prop-types@^15.8.1:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-"protoss-exchange-sdk@https://github.com/protoss-exchange/protoss-exchange-sdk.git#main":
+"protoss-exchange-sdk@https://github.com/protoss-exchange/protoss-exchange-sdk.git#protoss":
   version "0.9.0"
-  resolved "https://github.com/protoss-exchange/protoss-exchange-sdk.git#1a362d79c76353b5ea9a0153ddb586d523d16c66"
+  resolved "https://github.com/protoss-exchange/protoss-exchange-sdk.git#551350ec025fceba8d35a22dfebb88f955c62cc4"
   dependencies:
     big.js "^6.2.1"
     decimal.js-light "^2.5.1"

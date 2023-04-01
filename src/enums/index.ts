@@ -22,4 +22,10 @@ export enum TransactionHashPrefix {
   INVOKE = '0x696e766f6b65', // encodeShortString('invoke'),
   L1_HANDLER = '0x6c315f68616e646c6572', // encodeShortString('l1_handler'),
 }
-export const CONTRACT_ADDRESS = '0x07ac356a4fbac10015447c75d5aedf438e341f6f003476b85afdf6a1921807bd'
+export const CONTRACT_ADDRESS =
+  '0x06f5a85cfdadca8a90f7b99c99afd992a149e853a641257db99cf50bc2093ed7';
+
+export const ROUTER_ADDRESS =
+  '0x064ee214c54f4e3e43fcca70cb518f6eca85a29548a3eaa2da67fe9ac4a866e4';
+export const ROUTER_ADDRESS_DECIMAL =
+  '2853251517204766224103865475000826182578748023448290093960343823724355020516';

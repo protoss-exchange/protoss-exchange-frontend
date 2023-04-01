@@ -1,6 +1,11 @@
 import { tradeExactIn } from 'services/trade.service';
 import { tokens } from 'enums/tokens';
-import { ChainId } from 'protoss-exchange-sdk';
+import {
+  ChainId,
+  JSBI,
+  SOLIDITY_TYPE_MAXIMA,
+  SolidityType,
+} from 'protoss-exchange-sdk';
 import { tryParseAmount } from 'utils/maths';
 import { useContext, useEffect, useState } from 'react';
 import { Button } from 'antd';
@@ -8,10 +13,12 @@ import { WalletContext } from 'context/WalletContext';
 import { getBalance } from 'services/balances.service';
 import styles from './index.module.css';
 import { TokenInput } from 'components';
+import { onSwapToken } from 'services/trade.service';
+import { bnToUint256 } from 'starknet/utils/uint256';
 
 const Swap = () => {
-  const [fromCurrency, setFromCurrency] = useState('ETH');
-  const [toCurrency, setToCurrency] = useState('DAI');
+  const [fromCurrency, setFromCurrency] = useState('TOA');
+  const [toCurrency, setToCurrency] = useState('TOC');
   const [inputValue, setInputValue] = useState('');
   const [outAmount, setOutAmount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
@@ -57,6 +64,15 @@ const Swap = () => {
     if (isFetching) return 'Calculating...';
     return 'Transfer';
   };
+
+  const swapToken = () => {
+    onSwapToken(
+      wallet,
+      tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0],
+      Number(inputValue)
+    );
+  };
+
   return (
     <div className={styles.swapContainer}>
       <TokenInput
@@ -71,7 +87,7 @@ const Swap = () => {
       />
       <div>
         <Button
-          onClick={() => alert('Tx Start')}
+          onClick={swapToken}
           style={{
             height: 60,
             width: 300,
