@@ -67,10 +67,12 @@ const Swap = () => {
   };
 
   const swapToken = () => {
+    const uint256Input = bnToUint256(JSBI.BigInt(Number(inputValue) * DECIMAL));
+    const uint256Output = bnToUint256(JSBI.BigInt(Number(outAmount) * DECIMAL));
     onSwapToken(
       wallet,
-      bnToUint256(JSBI.BigInt(Number(inputValue) * DECIMAL)),
-      bnToUint256(JSBI.BigInt(outAmount * DECIMAL)),
+      uint256Input,
+      uint256Output,
       tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0],
       tokens[ChainId.TESTNET].filter(item => item.symbol === toCurrency)[0]
     );

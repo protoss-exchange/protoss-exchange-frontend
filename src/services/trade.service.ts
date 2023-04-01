@@ -8,16 +8,24 @@ import {
   TokenAmount,
   Trade,
 } from 'protoss-exchange-sdk';
+import bigDecimal from 'js-big-decimal';
 import ProtossSwapPairABI from 'abi/protoss_pair_abi.json';
 import ProtossERC20ABI from 'abi/protoss_erc20_abi.json';
+import ProtossRouterABI from 'abi/protoss_router_abi.json';
 import { Contract, Abi, AccountInterface } from 'starknet';
 import { defaultProvider } from '../constants';
 import { IResponse } from 'enums/types';
-import { ROUTER_ADDRESS, SERVER_URLS } from 'enums';
+import {
+  DECIMAL,
+  ROUTER_ADDRESS,
+  ROUTER_ADDRESS_DECIMAL,
+  SERVER_URLS,
+} from 'enums';
 import axios from 'axios';
 import { getToken } from '../utils';
-import { Uint256, uint256ToBN } from 'starknet/utils/uint256';
+import { bnToUint256, Uint256, uint256ToBN } from 'starknet/utils/uint256';
 import { StarknetWindowObject } from 'get-starknet-core';
+import { hexToDecimalString } from 'starknet/utils/number';
 
 export interface AllPairItem {
   token0: {
@@ -141,33 +149,39 @@ export const onSwapToken = async (
     ROUTER_ADDRESS,
   ]);
   const bigInt = JSBI.BigInt(uint256ToBN(ret[0]));
+
   if (bigInt.toString() === '0') {
-    wallet.account?.execute([
+    const ret1 = await wallet.account?.execute([
       {
         entrypoint: 'approve',
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        contractAddress: ROUTER_ADDRESS,
-        calldata: [
-          fromCurrency.address,
-          340282366920938463463374607431768211455,
-          340282366920938463463374607431768211455,
-        ],
+        contractAddress: fromCurrency.address,
+        calldata: [ROUTER_ADDRESS, 1000, 100],
       },
     ]);
   } else {
-    const routerContract = new Contract(
-      ProtossERC20ABI as Abi,
-      ROUTER_ADDRESS,
-      defaultProvider
+    console.log(amountIn.low, amountIn.high);
+    const ret2 = await wallet.account?.execute(
+      [
+        {
+          entrypoint: 'swapTokensForExactTokens',
+          contractAddress: ROUTER_ADDRESS_DECIMAL,
+          calldata: [
+            amountIn.low,
+            amountIn.high,
+            amountOutMin.low,
+            amountOutMin.high,
+            '2',
+            fromCurrency.address,
+            toCurrency.address,
+            wallet.account?.address,
+            Math.floor(Date.now() / 1000) + 86400,
+          ],
+        },
+      ],
+      [ProtossERC20ABI as Abi, ProtossRouterABI as Abi],
+      { maxFee: 17390000 }
     );
-    routerContract.connect(wallet.account as AccountInterface);
-    const ret2 = await routerContract.call('swapExactTokenForTokens', [
-      amountIn,
-      amountOutMin,
-      '2',
-      fromCurrency.address,
-      toCurrency.address,
-      Math.floor(Date.now() / 1000) + 86400,
-    ]);
+    console.log(ret2);
   }
 };

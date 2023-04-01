@@ -19,6 +19,7 @@
     "ethers": "^5.5.1",
     "get-starknet": "^2.0.0",
     "get-starknet-core": "^2.0.0",
+    "js-big-decimal": "^1.4.1",
     "lodash": "^4.17.21",
     "prettier": "2.8.7",
     "protoss-exchange-sdk": "https://github.com/protoss-exchange/protoss-exchange-sdk.git#protoss",
