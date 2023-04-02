@@ -2,8 +2,7 @@ import {
   ChainId,
   JSBI,
   Pair,
-  SOLIDITY_TYPE_MAXIMA,
-  SolidityType,
+  Percent,
   Token,
   TokenAmount,
   Trade,
@@ -15,7 +14,7 @@ import ProtossRouterABI from 'abi/protoss_router_abi.json';
 import { Contract, Abi, AccountInterface } from 'starknet';
 import { defaultProvider } from '../constants';
 import { IResponse } from 'enums/types';
-import {toBN} from "starknet/utils/number";
+import { toBN } from 'starknet/utils/number';
 import {
   DECIMAL,
   ROUTER_ADDRESS,
@@ -134,12 +133,25 @@ export async function getAllPairs(chainId: ChainId) {
 
 export const onSwapToken = async (
   wallet: StarknetWindowObject | null,
-  amountIn: Uint256,
-  amountOutMin: Uint256,
+  amountIn: string | number,
+  amountOutMin: string | number,
   fromCurrency: Token,
-  toCurrency: Token
+  toCurrency: Token,
+  slippage: number | undefined
 ) => {
+  const amountInNum = Number(amountIn);
+  const amountOutMinNum = Number(amountOutMin);
+  const uint256Input = bnToUint256(
+    BigInt(new bigDecimal(Number(amountInNum) * DECIMAL).getValue())
+  );
+  const uint256Output = bnToUint256(
+    BigInt(new bigDecimal(Number(amountOutMinNum) * DECIMAL).getValue())
+  );
+  let minimumOut;
   if (!wallet) return;
+  if (slippage) {
+    minimumOut = amountOutMinNum * (1 - slippage / 100);
+  }
   const contract = new Contract(
     ProtossERC20ABI as Abi,
     fromCurrency.address,
@@ -161,16 +173,17 @@ export const onSwapToken = async (
       },
     ]);
   } else {
+    if (minimumOut && minimumOut > amountOutMinNum) return;
     const ret2 = await wallet.account?.execute(
       [
         {
           entrypoint: 'swapExactTokensForTokens',
           contractAddress: ROUTER_ADDRESS_DECIMAL,
           calldata: [
-            amountIn.low,
-            amountIn.high,
-            amountOutMin.low,
-            amountOutMin.high,
+            uint256Input.low,
+            uint256Input.high,
+            uint256Output.low,
+            uint256Output.high,
             '2',
             fromCurrency.address,
             toCurrency.address,

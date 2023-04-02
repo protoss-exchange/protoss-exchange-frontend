@@ -1,5 +1,5 @@
 import { Token, ChainId } from 'protoss-exchange-sdk';
-import {DECIMAL} from "./index";
+import { DECIMAL } from './index';
 // a list of tokens by chain
 type ChainTokenList = {
   readonly [chainId in ChainId]: Token[];

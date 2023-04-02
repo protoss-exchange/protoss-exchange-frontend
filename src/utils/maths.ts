@@ -1,5 +1,16 @@
-import { Token, TokenAmount, JSBI } from 'protoss-exchange-sdk';
+import {
+  Token,
+  TokenAmount,
+  JSBI,
+  Percent,
+  TradeType,
+  Fraction,
+  ONE,
+  ZERO,
+} from 'protoss-exchange-sdk';
 import { parseUnits } from '@ethersproject/units';
+import { bnToUint256, Uint256 } from 'starknet/utils/uint256';
+import { toBN } from 'starknet/utils/number';
 
 // parse scientific notation to string, like this 1e5->10000
 export function scientificNotationToString(param: string) {

@@ -1,22 +1,15 @@
 import { tradeExactIn } from 'services/trade.service';
 import { tokens } from 'enums/tokens';
-import {
-  ChainId,
-  JSBI,
-  SOLIDITY_TYPE_MAXIMA,
-  SolidityType,
-} from 'protoss-exchange-sdk';
+import { ChainId } from 'protoss-exchange-sdk';
 import { tryParseAmount } from 'utils/maths';
 import { useContext, useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { WalletContext } from 'context/WalletContext';
 import { getBalance } from 'services/balances.service';
 import styles from './index.module.css';
 import { TokenInput } from 'components';
 import { onSwapToken } from 'services/trade.service';
-import { bnToUint256 } from 'starknet/utils/uint256';
-import { DECIMAL } from '../../enums';
-import bigDecimal from "js-big-decimal";
+import { SettingOutlined } from '@ant-design/icons';
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState('TOA');
@@ -24,6 +17,8 @@ const Swap = () => {
   const [inputValue, setInputValue] = useState('');
   const [outAmount, setOutAmount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
+  const [slippage, setSlippage] = useState(1);
+  const [slippageAdjustVisible, setSlippageAdjustVisible] = useState(false);
   const { wallet } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
   const onSwap = async () => {
@@ -68,20 +63,42 @@ const Swap = () => {
   };
 
   const swapToken = () => {
-    const uint256Input = bnToUint256(BigInt(new bigDecimal(Number(inputValue) * DECIMAL).getValue()));
-    const uint256Output = bnToUint256(BigInt(new bigDecimal(Number(outAmount) * DECIMAL).getValue()))
-    console.log(uint256Input.low)
     onSwapToken(
       wallet,
-      uint256Input,
-      uint256Output,
+      inputValue,
+      outAmount,
       tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0],
-      tokens[ChainId.TESTNET].filter(item => item.symbol === toCurrency)[0]
+      tokens[ChainId.TESTNET].filter(item => item.symbol === toCurrency)[0],
+      slippage
     );
   };
 
   return (
     <div className={styles.swapContainer}>
+      <SettingOutlined
+        onClick={() => setSlippageAdjustVisible(true)}
+        style={{ fontSize: 24, alignSelf: 'self-end' }}
+      />
+      <Modal
+        visible={slippageAdjustVisible}
+        onCancel={() => setSlippageAdjustVisible(false)}
+        footer={null}
+      >
+        <div style={{ fontSize: 24, fontWeight: 600 }}>
+          Set Slippage Tolerance:
+        </div>
+        <div className={styles.slippageContainer}>
+          {[0.2, 0.5, 1, 2].map(num => (
+            <Button
+              type={slippage === num ? 'primary' : 'default'}
+              onClick={() => setSlippage(num)}
+            >
+              {num}%
+            </Button>
+          ))}
+          <div style={{ marginLeft: 20 }}>Current Slippage: {slippage}%</div>
+        </div>
+      </Modal>
       <TokenInput
         inputValue={inputValue}
         setInputValue={setInputValue}
@@ -109,6 +126,16 @@ const Swap = () => {
         >
           {generateBtnText()}
         </Button>
+        <div className={styles.swapDetail}>
+          <div className={styles.detailInfo}>
+            <span>Expected Output</span>
+            <span>{outAmount}</span>
+          </div>
+          <div className={styles.detailInfo}>
+            <span>Minimum received after slippage ({slippage}%)</span>
+            <span>{(outAmount * (1 - slippage / 100)).toFixed(6)}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
