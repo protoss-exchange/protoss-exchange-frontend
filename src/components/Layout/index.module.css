@@ -1,0 +1,48 @@
+.root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:24px;
+}
+.header {
+    padding: 0 20px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.headerItem, .headerItemSelected {
+    position: relative;
+    margin: 0 20px;
+    font-weight: 500;
+    font-size: 24px;
+    cursor: pointer;
+    color: white
+}
+.nav {
+    display: flex;
+}
+.headerItemSelected::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #3bc6a5;
+    border-radius: 4px
+}
+
+.walletBtn {
+    color: white;
+    font-weight: 600;
+    border-radius: 24px;
+    background-color: #00c6f3;
+    padding: 16px;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.walletBtn:hover {
+
+}
