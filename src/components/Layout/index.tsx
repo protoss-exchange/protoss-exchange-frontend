@@ -1,14 +1,23 @@
 import { FC, ReactNode } from 'react';
 import styles from './index.module.css';
 import { Header } from './Header';
+import { GithubOutlined, TwitterCircleFilled } from '@ant-design/icons';
 interface Props {
   children: ReactNode;
 }
-export const Layout: FC<Props> = ({ children }) => {
+export const PageLayout: FC<Props> = ({ children }) => {
   return (
     <>
-      <Header />
+      {/*<Header />*/}
       <div className={styles.root}>{children}</div>
+      <footer className={styles.footer}>
+        <GithubOutlined
+          onClick={() =>
+            window.open('https://github.com/protoss-exchange', '_blank')
+          }
+        />
+        <TwitterCircleFilled onClick={() => window.open('', '_blank')} />
+      </footer>
     </>
   );
 };

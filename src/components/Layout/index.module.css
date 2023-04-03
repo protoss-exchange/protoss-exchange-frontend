@@ -46,3 +46,18 @@
 .walletBtn:hover {
 
 }
+
+.footer {
+    position: absolute;
+    bottom: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.footer svg {
+    font-size: 24px;
+    color: #505050;
+    margin-left: 12px;
+}
