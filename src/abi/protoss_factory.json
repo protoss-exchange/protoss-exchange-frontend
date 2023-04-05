@@ -300,7 +300,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 702,
-                "value": "ProtossSwap: PE"
+                "value": "ProtossSwap: Pair Existed"
             },
             {
                 "accessible_scopes": [
@@ -323,7 +323,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 861,
-                "value": "ProtossSwap: FB"
+                "value": "ProtossSwap: Not feeToSetter"
             }
         ],
         "builtins": [
