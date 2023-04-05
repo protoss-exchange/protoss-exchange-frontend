@@ -20,9 +20,9 @@ function App() {
       >
         <Switch>
           <PageLayout>
-            <Route path='/' exact component={Wip} />
-            {/*<Route path='/' exact component={Swap} />*/}
-            {/*<Route path='/pool' exact component={Pool} />*/}
+            {/*<Route path='/' exact component={Wip} />*/}
+            <Route path='/' exact component={Swap} />
+            <Route path='/pool' exact component={Pool} />
           </PageLayout>
         </Switch>
       </WalletContext.Provider>

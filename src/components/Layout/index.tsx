@@ -8,7 +8,7 @@ interface Props {
 export const PageLayout: FC<Props> = ({ children }) => {
   return (
     <>
-      {/*<Header />*/}
+      <Header />
       <div className={styles.root}>{children}</div>
       <footer className={styles.footer}>
         <GithubOutlined

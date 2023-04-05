@@ -1,14 +1,14 @@
 export const routes = [
-  {
-    name: 'Wip',
-    path: '/',
-  },
   // {
-  //   name: 'Swap',
+  //   name: 'Wip',
   //   path: '/',
   // },
-  // {
-  //   name: 'Pool',
-  //   path: '/Pool',
-  // },
+  {
+    name: 'Swap',
+    path: '/',
+  },
+  {
+    name: 'Pool',
+    path: '/Pool',
+  },
 ];
