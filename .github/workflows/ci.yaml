@@ -18,9 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install yarn
-        uses: yarn/action-setup@v2
-
       - name: Set node version
         uses: actions/setup-node@v3
         with:
