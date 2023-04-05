@@ -16,7 +16,7 @@ export const PageLayout: FC<Props> = ({ children }) => {
             window.open('https://github.com/protoss-exchange', '_blank')
           }
         />
-        <TwitterCircleFilled onClick={() => window.open('', '_blank')} />
+        <TwitterCircleFilled onClick={() => window.open('https://twitter.com/protossdex', '_blank')} />
       </footer>
     </>
   );

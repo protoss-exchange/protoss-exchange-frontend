@@ -2,7 +2,7 @@ name: Build and Deploy prod
 
 on:
   push:
-    branches: [production]
+    branches: [master]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -21,9 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install yarn
-        uses: yarn/action-setup@v2
-
       - name: Set node version
         uses: actions/setup-node@v3
         with:
@@ -41,6 +38,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 'obx-bridge'
-          directory: 'dist'
+          projectName: 'protoss-exchange-frontend'
+          directory: 'build'
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
