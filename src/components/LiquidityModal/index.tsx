@@ -1,6 +1,6 @@
-import { Button, Modal } from 'antd';
-import { FC } from 'react';
-import TokenInput, { ITokenInputProps } from '../TokenInput';
+import { Button, Modal } from "antd";
+import { FC } from "react";
+import TokenInput, { ITokenInputProps } from "../TokenInput";
 
 interface ILiquidityModalProps extends ITokenInputProps {
   visible: boolean;
@@ -20,15 +20,15 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
 }) => {
   return (
     <Modal
-      title={'Add Liquidity'}
+      title={"Add Liquidity"}
       visible={visible}
       onCancel={() => setVisible(false)}
       footer={null}
       bodyStyle={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <TokenInput
@@ -46,9 +46,9 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
           height: 60,
           width: 300,
           borderRadius: 300,
-          backgroundColor: '#00c6f3',
-          color: 'white',
-          fontSize: '20px',
+          backgroundColor: "#00c6f3",
+          color: "white",
+          fontSize: "20px",
           marginTop: 20,
         }}
       >

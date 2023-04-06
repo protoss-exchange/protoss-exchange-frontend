@@ -1223,7 +1223,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 2889,
-                "value": "ProtossSwap: FB"
+                "value": "ProtossSwap: FORBIDDEN"
             },
             {
                 "accessible_scopes": [
@@ -1261,7 +1261,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3260,
-                "value": "ProtossSwap: ILB"
+                "value": "ProtossSwap: Insufficient liquidity burned"
             },
             {
                 "accessible_scopes": [
@@ -1287,7 +1287,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3396,
-                "value": "ProtossSwap: IOA"
+                "value": "ProtossSwap: Insufficient output amount"
             },
             {
                 "accessible_scopes": [
@@ -1318,7 +1318,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3423,
-                "value": "ProtossSwap: IL"
+                "value": "ProtossSwap: Insufficient liquidity"
             },
             {
                 "accessible_scopes": [
@@ -1352,7 +1352,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3457,
-                "value": "ProtossSwap: IT"
+                "value": "ProtossSwap: Invalid token"
             },
             {
                 "accessible_scopes": [
@@ -1393,7 +1393,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3531,
-                "value": "ProtossSwap: IIA"
+                "value": "ProtossSwap: Insufficient input amount"
             },
             {
                 "accessible_scopes": [
@@ -1466,7 +1466,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3872,
-                "value": "ProtossSwap: ILM"
+                "value": "ProtossSwap: Insufficient liquidity minted"
             },
             {
                 "accessible_scopes": [
@@ -1492,7 +1492,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 3922,
-                "value": "ProtossSwap: OV"
+                "value": "ProtossSwap: overflow"
             },
             {
                 "accessible_scopes": [

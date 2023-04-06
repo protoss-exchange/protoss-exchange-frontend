@@ -688,7 +688,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1031,
-                "value": "ProtossSwapLibrary: IIA"
+                "value": "ProtossSwapLibrary: Insufficient input amount"
             },
             {
                 "accessible_scopes": [
@@ -714,7 +714,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1042,
-                "value": "ProtossSwapLibrary: IL"
+                "value": "ProtossSwapLibrary: Insufficient liquidity"
             },
             {
                 "accessible_scopes": [
@@ -819,7 +819,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1262,
-                "value": "ProtossSwapLibrary: IP"
+                "value": "ProtossSwapLibrary: Invalid path"
             },
             {
                 "accessible_scopes": [
@@ -850,7 +850,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1890,
-                "value": "ProtossSwapRouter: IAA"
+                "value": "ProtossSwapRouter: Insufficient A amount"
             },
             {
                 "accessible_scopes": [
@@ -882,7 +882,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1899,
-                "value": "ProtossSwapRouter: IBA"
+                "value": "ProtossSwapRouter: Insufficient B amount"
             },
             {
                 "accessible_scopes": [
@@ -915,7 +915,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 1990,
-                "value": "ProtossSwapRouter: IOA"
+                "value": "ProtossSwapRouter: Insufficient output amount"
             },
             {
                 "accessible_scopes": [
@@ -948,7 +948,7 @@
                 },
                 "name": "error_message",
                 "start_pc": 2138,
-                "value": "ProtossSwapRouter: EIA"
+                "value": "ProtossSwapRouter: Excessive input amount"
             },
             {
                 "accessible_scopes": [

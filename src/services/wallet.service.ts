@@ -1,11 +1,11 @@
-import { StarknetWindowObject } from 'get-starknet-core';
+import { StarknetWindowObject } from "get-starknet-core";
 import {
   connect,
   ConnectOptions,
   disconnect,
   DisconnectOptions,
-} from 'get-starknet';
-import { STARKNET_WALLET_NAME } from 'enums';
+} from "get-starknet";
+import { STARKNET_WALLET_NAME } from "enums";
 
 class WalletService {
   private _wallet: StarknetWindowObject | null | undefined;
@@ -25,10 +25,10 @@ class WalletService {
   async restorePreviouslyConnectedWallet() {
     const previouslyConnected = localStorage.getItem(STARKNET_WALLET_NAME);
     if (!previouslyConnected) return null;
-    const wallet = await connect({ modalMode: 'neverAsk' });
+    const wallet = await connect({ modalMode: "neverAsk" });
     if (!wallet?.isConnected) {
       await wallet?.enable({
-        starknetVersion: 'v4',
+        starknetVersion: "v4",
       });
     }
     this._wallet = wallet;

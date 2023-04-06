@@ -1,6 +1,6 @@
 .fromCurrency, .toCurrency {
     padding: 24px;
-    background-color: #f2f2f2;
+    background-color: rgba(23,30,46,0.8);
     border-radius: 24px;
     display: flex;
     align-items: center;
@@ -32,7 +32,16 @@
 }
 .swapBtn > svg {
     font-size: 24px;
+    color: #fff;
 }
 :global .ant-input {
     flex-grow: 2;
+}
+:global .ant-select-selector {
+    background-color: rgb(23,30,46) !important;
+    color: #fff !important;
+}
+
+:global .ant-select-arrow svg {
+    color: #fff !important;
 }

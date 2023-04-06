@@ -7,10 +7,10 @@ import {
   Fraction,
   ONE,
   ZERO,
-} from 'protoss-exchange-sdk';
-import { parseUnits } from '@ethersproject/units';
-import { bnToUint256, Uint256 } from 'starknet/utils/uint256';
-import { toBN } from 'starknet/utils/number';
+} from "protoss-exchange-sdk";
+import { parseUnits } from "@ethersproject/units";
+import { bnToUint256, Uint256 } from "starknet/utils/uint256";
+import { toBN } from "starknet/utils/number";
 
 // parse scientific notation to string, like this 1e5->10000
 export function scientificNotationToString(param: string) {
@@ -24,15 +24,15 @@ export function scientificNotationToString(param: string) {
   }
 
   const index = Number(param.match(/\d+$/)?.[0]);
-  const basis = param.match(/^[\d.]+/)?.[0].replace(/\./, '');
+  const basis = param.match(/^[\d.]+/)?.[0].replace(/\./, "");
 
   if (!basis) {
     return param;
   }
 
   return sysbol
-    ? basis.padEnd(index + 1, '0')
-    : basis.padStart(index + (basis?.length ?? 0), '0').replace(/^0/, '0.');
+    ? basis.padEnd(index + 1, "0")
+    : basis.padStart(index + (basis?.length ?? 0), "0").replace(/^0/, "0.");
 }
 export const tryParseAmount = (
   value?: string | number,
@@ -46,7 +46,7 @@ export const tryParseAmount = (
       value.toString(),
       currency.decimals
     ).toString();
-    if (typedValueParsed !== '0') {
+    if (typedValueParsed !== "0") {
       return new TokenAmount(currency, JSBI.BigInt(typedValueParsed));
     }
   } catch (error) {

@@ -1,16 +1,16 @@
-import styles from './index.module.css';
-import { routes } from 'routes';
-import { useHistory, useLocation } from 'react-router-dom';
-import { walletService } from 'services/wallet.service';
-import { useContext, useEffect } from 'react';
-import { WalletContext } from 'context/WalletContext';
+import styles from "./index.module.css";
+import { routes } from "routes";
+import { useHistory, useLocation } from "react-router-dom";
+import { walletService } from "services/wallet.service";
+import { useContext, useEffect } from "react";
+import { WalletContext } from "context/WalletContext";
 export const Header = () => {
   const location = useLocation();
   const history = useHistory();
   const { setWallet, wallet } = useContext(WalletContext);
   const handleConnect = async () => {
     const wallet = await walletService.connectToWallet({
-      modalMode: 'alwaysAsk',
+      modalMode: "alwaysAsk",
     });
     setWallet(wallet);
   };
@@ -31,7 +31,7 @@ export const Header = () => {
   return (
     <div className={styles.header}>
       <div className={styles.nav}>
-        {routes.map(route => (
+        {routes.map((route) => (
           <div
             onClick={() => history.push(route.path)}
             key={route.path}

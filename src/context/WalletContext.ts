@@ -1,5 +1,5 @@
-import { createContext } from 'react';
-import { StarknetWindowObject } from 'get-starknet-core';
+import { createContext } from "react";
+import { StarknetWindowObject } from "get-starknet-core";
 interface WalletContextType {
   wallet: StarknetWindowObject | null;
   setWallet: (wallet: StarknetWindowObject | null) => void;
