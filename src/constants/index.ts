@@ -1,3 +1,3 @@
-import { Provider } from 'starknet';
+import { Provider } from "starknet";
 
 export const defaultProvider = new Provider();

@@ -1,20 +1,20 @@
-import { tradeExactIn } from 'services/trade.service';
-import { tokens } from 'enums/tokens';
-import { ChainId } from 'protoss-exchange-sdk';
-import { tryParseAmount } from 'utils/maths';
-import { useContext, useEffect, useState } from 'react';
-import { Button, Modal } from 'antd';
-import { WalletContext } from 'context/WalletContext';
-import { getBalance } from 'services/balances.service';
-import styles from './index.module.css';
-import { TokenInput } from 'components';
-import { onSwapToken } from 'services/trade.service';
-import { SettingOutlined } from '@ant-design/icons';
+import { tradeExactIn } from "services/trade.service";
+import { tokens } from "enums/tokens";
+import { ChainId } from "protoss-exchange-sdk";
+import { tryParseAmount } from "utils/maths";
+import { useContext, useEffect, useState } from "react";
+import { Button, Modal } from "antd";
+import { WalletContext } from "context/WalletContext";
+import { getBalance } from "services/balances.service";
+import styles from "./index.module.css";
+import { TokenInput } from "components";
+import { onSwapToken } from "services/trade.service";
+import { SettingOutlined } from "@ant-design/icons";
 
 const Swap = () => {
-  const [fromCurrency, setFromCurrency] = useState('TOA');
-  const [toCurrency, setToCurrency] = useState('TOC');
-  const [inputValue, setInputValue] = useState('');
+  const [fromCurrency, setFromCurrency] = useState("TOA");
+  const [toCurrency, setToCurrency] = useState("TOC");
+  const [inputValue, setInputValue] = useState("");
   const [outAmount, setOutAmount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [slippage, setSlippage] = useState(1);
@@ -24,14 +24,14 @@ const Swap = () => {
   const onSwap = async () => {
     setIsFetching(true);
     const inputToken = tokens[ChainId.TESTNET].filter(
-      item => item.symbol === fromCurrency
+      (item) => item.symbol === fromCurrency
     )[0];
     const outputToken = tokens[ChainId.TESTNET].filter(
-      item => item.symbol === toCurrency
+      (item) => item.symbol === toCurrency
     )[0];
 
     tradeExactIn(tryParseAmount(inputValue, inputToken), outputToken).then(
-      ret => {
+      (ret) => {
         const outAmount = ret?.outputAmount.toSignificant(10);
         setOutAmount(Number(outAmount) || 0);
       }
@@ -55,11 +55,11 @@ const Swap = () => {
     onSwap();
   }, [fromCurrency, toCurrency, inputValue]);
   const generateBtnText = () => {
-    if (!wallet?.isConnected) return 'Connect Wallet';
-    if (insufficient) return 'Insufficient Balance';
-    if (!inputValue) return 'Input An Amount';
-    if (isFetching) return 'Calculating...';
-    return 'Transfer';
+    if (!wallet?.isConnected) return "Connect Wallet";
+    if (insufficient) return "Insufficient Balance";
+    if (!inputValue) return "Input An Amount";
+    if (isFetching) return "Calculating...";
+    return "Transfer";
   };
 
   const swapToken = () => {
@@ -67,8 +67,8 @@ const Swap = () => {
       wallet,
       inputValue,
       outAmount,
-      tokens[ChainId.TESTNET].filter(item => item.symbol === fromCurrency)[0],
-      tokens[ChainId.TESTNET].filter(item => item.symbol === toCurrency)[0],
+      tokens[ChainId.TESTNET].filter((item) => item.symbol === fromCurrency)[0],
+      tokens[ChainId.TESTNET].filter((item) => item.symbol === toCurrency)[0],
       slippage
     );
   };
@@ -77,7 +77,7 @@ const Swap = () => {
     <div className={styles.swapContainer}>
       <SettingOutlined
         onClick={() => setSlippageAdjustVisible(true)}
-        style={{ fontSize: 24, alignSelf: 'self-end' }}
+        style={{ fontSize: 24, alignSelf: "self-end", color: "#fff" }}
       />
       <Modal
         visible={slippageAdjustVisible}
@@ -88,9 +88,9 @@ const Swap = () => {
           Set Slippage Tolerance:
         </div>
         <div className={styles.slippageContainer}>
-          {[0.2, 0.5, 1, 2].map(num => (
+          {[0.2, 0.5, 1, 2].map((num) => (
             <Button
-              type={slippage === num ? 'primary' : 'default'}
+              type={slippage === num ? "primary" : "default"}
               onClick={() => setSlippage(num)}
             >
               {num}%
@@ -116,9 +116,10 @@ const Swap = () => {
             height: 60,
             width: 300,
             borderRadius: 300,
-            backgroundColor: '#0070f3',
-            color: 'white',
-            fontSize: '20px',
+            backgroundColor: "#112545",
+            color: "white",
+            fontSize: "20px",
+            border: "none",
           }}
           disabled={
             !wallet?.isConnected || insufficient || !inputValue || isFetching

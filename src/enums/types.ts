@@ -1,4 +1,4 @@
-import { Pair, Token, TokenAmount } from 'protoss-exchange-sdk';
+import { Pair, Token, TokenAmount } from "protoss-exchange-sdk";
 
 export interface IResponse<T> {
   data: T;

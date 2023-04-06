@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     padding:24px;
+    flex-grow: 2;
 }
 .header {
     padding: 0 20px;
@@ -15,7 +16,7 @@
 .headerItem, .headerItemSelected {
     position: relative;
     margin: 0 20px;
-    font-weight: 500;
+    font-weight: 700;
     font-size: 24px;
     cursor: pointer;
     color: white
@@ -48,16 +49,16 @@
 }
 
 .footer {
-    position: absolute;
-    bottom: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 
 .footer svg {
     font-size: 24px;
-    color: #505050;
+    color: #fff;
     margin-left: 12px;
 }
