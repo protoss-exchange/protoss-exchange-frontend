@@ -70,7 +70,7 @@ const Swap = () => {
     if (!inputValue) return "Input An Amount";
     if (inputInvalid) return "Input Invalid";
     if (isFetching) return "Calculating...";
-    return "Transfer";
+    return "Swap";
   };
 
   const swapToken = () => {
