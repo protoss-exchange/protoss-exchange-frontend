@@ -44,9 +44,9 @@ export const Header = () => {
       walletService.connectToWallet({ modalMode: "neverAsk" });
       if (inCorrectNetwork(network)) {
         setValidNetwork(true);
-        return;
+      } else {
+        setValidNetwork(false);
       }
-      setValidNetwork(false);
     });
   }, [wallet]);
   console.log(validNetwork)
