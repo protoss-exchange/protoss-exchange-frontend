@@ -30,7 +30,7 @@ jobs:
       - name: Install deps
         run: yarn
 
-      -name: Copy .env
+      - name: Copy .env
         run: cp .env.development .env
 
       - name: Build
