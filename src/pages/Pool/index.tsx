@@ -6,6 +6,7 @@ import { Button, Table } from "antd";
 import styles from "./index.module.css";
 import { IPool } from "enums/types";
 import { LiquidityModal } from "../../components";
+import { getChain } from "utils";
 const Pool = () => {
   const [liquidities, setLiquidities] = useState<IPool[]>([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -17,7 +18,7 @@ const Pool = () => {
 
   useEffect(() => {
     setIsFetching(true);
-    getAllPairs(ChainId.TESTNET).then((ret) => {
+    getAllPairs(getChain()).then((ret) => {
       setLiquidities(ret);
       setIsFetching(false);
     });

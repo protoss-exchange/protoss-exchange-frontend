@@ -1,7 +1,7 @@
 import styles from "./index.module.css";
 import { Input, Select, Tooltip, Typography } from "antd";
 import { tokens } from "enums/tokens";
-import { ChainId } from "protoss-exchange-sdk";
+import { getChain } from "utils";
 import { FC, useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../context/WalletContext";
 import { getBalance } from "../../services/balances.service";
@@ -9,9 +9,9 @@ import { SwapOutlined } from "@ant-design/icons";
 export interface ITokenInputProps {
   inputValue: string;
   setInputValue: (v: string) => void;
-  fromCurrency: string;
+  fromCurrency: string | undefined;
   setFromCurrency: (v: string) => void;
-  toCurrency: string;
+  toCurrency: string | undefined;
   setToCurrency: (v: string) => void;
   outAmount: number;
   swapNumber?: () => void;
@@ -28,17 +28,16 @@ const TokenInput: FC<ITokenInputProps> = ({
   outAmount,
   swapNumber,
 }) => {
-  const { wallet } = useContext(WalletContext);
+  const { wallet, validNetwork } = useContext(WalletContext);
   const [balance, setBalance] = useState(0);
   useEffect(() => {
     if (wallet) {
       getBalance(
         wallet,
-        tokens[ChainId.TESTNET].filter(
-          (item) => item.symbol === fromCurrency
-        )[0].address
+        tokens[getChain()].filter((item) => item.symbol === fromCurrency)[0]
+          .address
       ).then((ret) => {
-        console.log(ret);
+        // console.log(ret);
         setBalance(Number(ret) || 0);
       });
     }
@@ -47,13 +46,14 @@ const TokenInput: FC<ITokenInputProps> = ({
     <>
       <div className={styles.fromCurrency}>
         <Input
-          style={{ width: 220, backgroundColor: "transparent", color: "#fff" }}
+          placeholder="0.0"
+          style={{ width: 220 }}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
         <div className={styles.fromCurrencySelectContainer}>
           <Select value={fromCurrency} onSelect={setFromCurrency}>
-            {tokens[ChainId.TESTNET].map((item) => (
+            {tokens[getChain()].map((item) => (
               <Option key={item.symbol} value={item.symbol}>
                 {item.name}
               </Option>
@@ -62,7 +62,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           <div className={styles.balanceBox}>
             {!wallet ? (
               <span className={styles.balance}>Connect your wallet first</span>
-            ) : (
+            ) : validNetwork ? (
               <>
                 <Text className={styles.balance} ellipsis={true}>
                   Balance:{" "}
@@ -79,6 +79,8 @@ const TokenInput: FC<ITokenInputProps> = ({
                   max
                 </span>
               </>
+            ) : (
+              <span className={styles.balance}>Switch the network</span>
             )}
           </div>
         </div>
@@ -94,6 +96,7 @@ const TokenInput: FC<ITokenInputProps> = ({
       )}
       <div className={styles.toCurrency}>
         <Input
+          placeholder="0.0"
           value={outAmount.toFixed(6)}
           style={{ width: 220, backgroundColor: "transparent", color: "#fff" }}
         />
@@ -102,7 +105,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           onSelect={setToCurrency}
           placeholder={"Select"}
         >
-          {tokens[ChainId.TESTNET].map((item) => (
+          {tokens[getChain()].map((item) => (
             <Option key={item.symbol} value={item.symbol}>
               {item.name}
             </Option>

@@ -11,10 +11,9 @@ import bigDecimal from "js-big-decimal";
 import ProtossSwapPairABI from "abi/protoss_pair_abi.json";
 import ProtossERC20ABI from "abi/protoss_erc20_abi.json";
 import ProtossRouterABI from "abi/protoss_router_abi.json";
-import { Contract, Abi, AccountInterface } from "starknet";
+import { Contract, Abi } from "starknet";
 import { defaultProvider } from "../constants";
 import { IResponse } from "enums/types";
-import { toBN } from "starknet/utils/number";
 import {
   DECIMAL,
   ROUTER_ADDRESS,
@@ -24,8 +23,8 @@ import {
 import axios from "axios";
 import { getToken } from "../utils";
 import { bnToUint256, Uint256, uint256ToBN } from "starknet/utils/uint256";
-import { StarknetWindowObject } from "get-starknet-core";
 import { hexToDecimalString } from "starknet/utils/number";
+import { StarknetWindowObject } from "get-starknet";
 
 export interface AllPairItem {
   token0: {
@@ -98,7 +97,7 @@ export async function getAllPairs(chainId: ChainId) {
     );
     if (res.data.errCode === 0) {
       const data = res.data.data;
-      console.log(data);
+      // console.log(data);
       return data
         .filter((item) => {
           return !!(
@@ -161,40 +160,33 @@ export const onSwapToken = async (
     wallet.account?.address,
     ROUTER_ADDRESS,
   ]);
-  const bigInt = JSBI.BigInt(uint256ToBN(ret[0]));
-
-  if (bigInt.toString() === "0") {
-    const ret1 = await wallet.account?.execute([
+  if (minimumOut && minimumOut > amountOutMinNum) return;
+  const ret2 = await wallet.account?.execute(
+    [
       {
         entrypoint: "approve",
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         contractAddress: fromCurrency.address,
         calldata: [ROUTER_ADDRESS, 1000, 100],
       },
-    ]);
-  } else {
-    if (minimumOut && minimumOut > amountOutMinNum) return;
-    const ret2 = await wallet.account?.execute(
-      [
-        {
-          entrypoint: "swapExactTokensForTokens",
-          contractAddress: ROUTER_ADDRESS_DECIMAL,
-          calldata: [
-            uint256Input.low,
-            uint256Input.high,
-            uint256Output.low,
-            uint256Output.high,
-            "2",
-            fromCurrency.address,
-            toCurrency.address,
-            wallet.account?.address,
-            Math.floor(Date.now() / 1000) + 86400,
-          ],
-        },
-      ],
-      [ProtossERC20ABI as Abi, ProtossRouterABI as Abi],
-      { maxFee: 17390000 }
-    );
-    console.log(ret2);
-  }
+      {
+        entrypoint: "swapExactTokensForTokens",
+        contractAddress: ROUTER_ADDRESS_DECIMAL,
+        calldata: [
+          uint256Input.low,
+          uint256Input.high,
+          uint256Output.low,
+          uint256Output.high,
+          "2",
+          fromCurrency.address,
+          toCurrency.address,
+          wallet.account?.address,
+          Math.floor(Date.now() / 1000) + 86400,
+        ],
+      },
+    ],
+    [ProtossERC20ABI as Abi, ProtossRouterABI as Abi],
+    { maxFee: 17390000 }
+  );
+  // console.log(ret2);
 };
