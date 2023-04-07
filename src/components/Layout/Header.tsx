@@ -49,7 +49,7 @@ export const Header = () => {
       setValidNetwork(false);
     });
   }, [wallet]);
-
+  console.log(validNetwork)
   const walletStatus = () => {
     if (!wallet?.isConnected)
       return (
