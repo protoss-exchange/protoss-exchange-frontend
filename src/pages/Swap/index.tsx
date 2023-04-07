@@ -1,6 +1,6 @@
 import { tradeExactIn } from "services/trade.service";
 import { tokens } from "enums/tokens";
-import { ChainId } from "protoss-exchange-sdk";
+import { getChain } from "utils";
 import { tryParseAmount } from "utils/maths";
 import { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -12,21 +12,25 @@ import { onSwapToken } from "services/trade.service";
 import { SettingOutlined } from "@ant-design/icons";
 
 const Swap = () => {
-  const [fromCurrency, setFromCurrency] = useState("TOA");
-  const [toCurrency, setToCurrency] = useState("TOC");
+  const [fromCurrency, setFromCurrency] = useState(
+    tokens[getChain()][0]?.symbol
+  );
+  const [toCurrency, setToCurrency] = useState(tokens[getChain()][1]?.symbol);
   const [inputValue, setInputValue] = useState("");
   const [outAmount, setOutAmount] = useState(0);
   const [isFetching, setIsFetching] = useState(false);
   const [slippage, setSlippage] = useState(1);
   const [slippageAdjustVisible, setSlippageAdjustVisible] = useState(false);
-  const { wallet } = useContext(WalletContext);
+  const [inputInvalid, setInputInvalid] = useState(false);
+  const { wallet, validNetwork } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
   const onSwap = async () => {
+    if (!fromCurrency || !toCurrency) return;
     setIsFetching(true);
-    const inputToken = tokens[ChainId.TESTNET].filter(
+    const inputToken = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
     )[0];
-    const outputToken = tokens[ChainId.TESTNET].filter(
+    const outputToken = tokens[getChain()].filter(
       (item) => item.symbol === toCurrency
     )[0];
 
@@ -36,7 +40,7 @@ const Swap = () => {
         setOutAmount(Number(outAmount) || 0);
       }
     );
-    if (wallet) {
+    if (wallet && validNetwork) {
       const inputBalance = await getBalance(wallet, inputToken.address);
       if (Number(inputBalance) < Number(inputValue)) {
         setInsufficient(true);
@@ -52,12 +56,19 @@ const Swap = () => {
   };
 
   useEffect(() => {
+    if (!inputValue.match(/^[0-9]*\.?[0-9]*$/)) {
+      setInputInvalid(true);
+      return;
+    }
+    setInputInvalid(false);
     onSwap();
   }, [fromCurrency, toCurrency, inputValue]);
   const generateBtnText = () => {
     if (!wallet?.isConnected) return "Connect Wallet";
+    if (!validNetwork) return "Invalid Network";
     if (insufficient) return "Insufficient Balance";
     if (!inputValue) return "Input An Amount";
+    if (inputInvalid) return "Input Invalid";
     if (isFetching) return "Calculating...";
     return "Transfer";
   };
@@ -67,8 +78,8 @@ const Swap = () => {
       wallet,
       inputValue,
       outAmount,
-      tokens[ChainId.TESTNET].filter((item) => item.symbol === fromCurrency)[0],
-      tokens[ChainId.TESTNET].filter((item) => item.symbol === toCurrency)[0],
+      tokens[getChain()].filter((item) => item.symbol === fromCurrency)[0],
+      tokens[getChain()].filter((item) => item.symbol === toCurrency)[0],
       slippage
     );
   };
@@ -109,7 +120,14 @@ const Swap = () => {
         outAmount={outAmount}
         swapNumber={swapNumber}
       />
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
         <Button
           onClick={swapToken}
           style={{
@@ -122,7 +140,12 @@ const Swap = () => {
             border: "none",
           }}
           disabled={
-            !wallet?.isConnected || insufficient || !inputValue || isFetching
+            !wallet?.isConnected ||
+            insufficient ||
+            !inputValue ||
+            isFetching ||
+            inputInvalid ||
+            !validNetwork
           }
         >
           {generateBtnText()}

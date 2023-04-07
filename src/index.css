@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: "Fira Code", monospace;
+  font-family: "Fira Code", monospace !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #000;
@@ -17,19 +17,3 @@ code {
   flex-direction: column;
 }
 
-tr, th {
-  background: rgb(23,30,40) !important;
-  color: white !important;
-}
-
-.ant-empty div {
-  color: white !important;
-}
-
-.ant-table-placeholder:hover {
-  background-color: rgb(23,30,40) !important;
-}
-
-.ant-table-placeholder:hover>td {
-  background-color: unset !important;
-}

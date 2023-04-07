@@ -2,9 +2,8 @@ import { Abi, Account, AccountInterface, Contract, Provider } from "starknet";
 import ProtossSwapPairABI from "../abi/protoss_pair_abi.json";
 import { defaultProvider } from "../constants";
 import { JSBI } from "protoss-exchange-sdk";
-import { bnToUint256, uint256ToBN } from "starknet/utils/uint256";
-import { StarknetWindowObject } from "get-starknet-core";
-import { CONTRACT_ADDRESS } from "enums";
+import { uint256ToBN } from "starknet/utils/uint256";
+import { StarknetWindowObject } from "get-starknet";
 
 export const getBalance = async (
   wallet: StarknetWindowObject,

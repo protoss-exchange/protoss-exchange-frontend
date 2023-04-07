@@ -1,12 +1,13 @@
-import { StarknetWindowObject } from "get-starknet-core";
 import {
   connect,
   ConnectOptions,
   disconnect,
   DisconnectOptions,
+  StarknetWindowObject,
 } from "get-starknet";
 import { STARKNET_WALLET_NAME } from "enums";
-
+import { EventHandler } from "@argent/get-starknet";
+const { REACT_APP_CHAIN_ID: CHAIN_ID } = process.env;
 class WalletService {
   private _wallet: StarknetWindowObject | null | undefined;
   private _starknet: any;
@@ -16,7 +17,7 @@ class WalletService {
   }
 
   async connectToWallet(options?: ConnectOptions) {
-    this._wallet = await connect(options);
+    this._wallet = await connect({ ...options, modalTheme: "dark" });
     if (this._wallet?.name)
       localStorage.setItem(STARKNET_WALLET_NAME, this._wallet?.name);
     return this._wallet;
@@ -27,9 +28,7 @@ class WalletService {
     if (!previouslyConnected) return null;
     const wallet = await connect({ modalMode: "neverAsk" });
     if (!wallet?.isConnected) {
-      await wallet?.enable({
-        starknetVersion: "v4",
-      });
+      await wallet?.enable();
     }
     this._wallet = wallet;
     return wallet;
@@ -64,6 +63,26 @@ class WalletService {
   getChainId() {
     if (!this._wallet?.isConnected) return;
     return this._wallet.provider.chainId;
+  }
+
+  confirmNetwork() {
+    if (
+      CHAIN_ID === "TESTNET" &&
+      this._wallet?.provider?.baseUrl?.includes("goerli")
+    )
+      return true;
+    return (
+      CHAIN_ID === "MAINNET" &&
+      this._wallet?.provider?.baseUrl?.includes("mainnet")
+    );
+  }
+
+  onAccountChange(eventHandler: EventHandler) {
+    this._wallet?.on("accountsChanged", eventHandler);
+  }
+
+  onNetworkChange(eventHandler: EventHandler) {
+    this._wallet?.on("networkChanged", eventHandler);
   }
 }
 
