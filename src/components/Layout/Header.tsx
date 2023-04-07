@@ -37,8 +37,10 @@ export const Header = () => {
     walletService.onAccountChange((walletAddress) => {
       setWalletAddress(walletAddress);
     });
+    console.log(wallet)
     setValidNetwork(confirmNetwork(wallet));
     walletService.onNetworkChange((network) => {
+      console.log(network)
       walletService.connectToWallet({ modalMode: "neverAsk" });
       if (inCorrectNetwork(network)) {
         setValidNetwork(true);
