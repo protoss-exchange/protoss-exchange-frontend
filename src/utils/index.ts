@@ -25,12 +25,10 @@ export function confirmNetwork(wallet: StarknetWindowObject) {
     //@ts-ignore
     chainId = wallet.provider["provider"]?.chainId;
   }
-  console.log(chainId)
   if (CHAIN_ID === "TESTNET" && chainId === ChainId.TESTNET) return true;
   return CHAIN_ID === "MAINNET" && chainId === ChainId.MAINNET;
 }
 export function inCorrectNetwork(network: string) {
-  console.log(CHAIN_ID, network.includes('goerli'))
   if (CHAIN_ID === "TESTNET" && network.includes("goerli")) return true;
   return CHAIN_ID === "MAINNET" && network.includes("mainnet");
 }
