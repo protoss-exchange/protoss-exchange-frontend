@@ -1,62 +1,92 @@
-import { useEffect, useState } from "react";
-import { AllPairItem, getAllPairs } from "services/trade.service";
-import { ChainId } from "protoss-exchange-sdk";
+import { useContext, useEffect, useState } from "react";
 import { ColumnProps } from "antd/es/table";
 import { Button, Table } from "antd";
 import styles from "./index.module.css";
-import { IPool } from "enums/types";
-import { LiquidityModal } from "../../components";
-import { getChain } from "utils";
+import { LiquidityModal } from "components";
+import { getAllPoolPairs, PairInfo } from "services/pool.service";
+import { WalletContext } from "context/WalletContext";
+import bigDecimal from "js-big-decimal";
+import { MyPoolItem } from "./MyPoolItem";
+import { useUpdateReserves } from "hooks/useUpdateReserves";
 const Pool = () => {
-  const [liquidities, setLiquidities] = useState<IPool[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [fromCurrency, setFromCurrency] = useState("TOA");
-  const [toCurrency, setToCurrency] = useState("TOB");
+  const [showAllPools, setShowAllPools] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [outAmount, setOutAmount] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState("0");
+  const [pairs, setPairs] = useState<PairInfo[]>([]);
+  const {
+    reserve0,
+    reserve1,
+    fromCurrency,
+    toCurrency,
+    setFromCurrency,
+    setToCurrency,
+    reservePolling,
+    updateReserveValues,
+  } = useUpdateReserves();
+  const { wallet } = useContext(WalletContext);
+  useEffect(() => {
+    if (wallet) {
+      setIsFetching(true);
+      getAllPoolPairs(wallet)
+        .then((ret) => setPairs(ret))
+        .finally(() => setIsFetching(false));
+    }
+  }, [wallet]);
+  const onAdd = (pair: PairInfo) => {
+    setModalVisible(true);
+    updateReserveValues(pair);
+  };
 
   useEffect(() => {
-    setIsFetching(true);
-    getAllPairs(getChain()).then((ret) => {
-      setLiquidities(ret);
-      setIsFetching(false);
-    });
-  }, []);
+    if (reserve1 && reserve0) {
+      const rate = bigDecimal.divide(
+        reserve0.toString(),
+        reserve1.toString(),
+        6
+      );
+      setExchangeRate(rate);
+      setOutAmount(Number(bigDecimal.multiply(inputValue, rate)));
+    }
+  }, [inputValue]);
 
-  const onAdd = () => {
-    setModalVisible(true);
+  const onLiquidityModalCancel = () => {
+    setModalVisible(false);
+    clearInterval(reservePolling);
   };
+
   const columns: ColumnProps<any>[] = [
     {
       key: "name",
       title: "Name",
       width: 200,
-      render: (_, record: AllPairItem) => {
+      align: "center",
+      render: (_, record: PairInfo) => {
         const { token0, token1 } = record;
         return (
           <span>
-            {token0.symbol} - {token1.symbol}
+            {token0?.symbol} - {token1?.symbol}
           </span>
         );
       },
     },
     {
       key: "liquidity",
-      title: "Liquidity",
       dataIndex: "liquidity",
+      title: "Liquidity",
       width: 200,
       align: "center",
-      render: (value) => <span>$ {value.toFixed(2)}</span>,
     },
     {
       key: "add",
       title: "Add",
       width: 200,
       align: "center",
-      render: () => {
+      render: (_, pair: PairInfo) => {
         return (
-          <Button type="link" onClick={onAdd}>
+          <Button type="link" onClick={() => onAdd(pair)}>
             Add Liquidity
           </Button>
         );
@@ -66,18 +96,43 @@ const Pool = () => {
   return (
     <div>
       <div className={styles.header}>Pools Overview</div>
-      <Table
-        dataSource={liquidities}
-        columns={columns}
-        pagination={false}
-        loading={isFetching}
-      />
+      <div className={styles.poolsBtn}>
+        <Button ghost={!showAllPools} onClick={() => setShowAllPools(true)}>
+          Pools
+        </Button>
+        <Button ghost={showAllPools} onClick={() => setShowAllPools(false)}>
+          My Pools
+        </Button>
+      </div>
+      {showAllPools ? (
+        <Table
+          dataSource={pairs}
+          columns={columns}
+          pagination={false}
+          loading={isFetching}
+        />
+      ) : (
+        pairs
+          .filter((item) => item.balances !== "0")
+          .map((pair) => (
+            <MyPoolItem
+              key={pair.address}
+              poolTokens={pair?.balances || "0"}
+              token0Symbol={pair.token0?.symbol || "TOA"}
+              token1Symbol={pair.token1?.symbol || "TOB"}
+              onAddLiquidity={() => onAdd(pair)}
+              pair={pair}
+              onWithdraw={() => alert("implementing")}
+            />
+          ))
+      )}
       <LiquidityModal
         visible={modalVisible}
-        setVisible={setModalVisible}
+        onCancel={onLiquidityModalCancel}
         inputValue={inputValue}
         setInputValue={setInputValue}
         fromCurrency={fromCurrency}
+        exchangeRate={exchangeRate}
         setFromCurrency={setFromCurrency}
         toCurrency={toCurrency}
         setToCurrency={setToCurrency}

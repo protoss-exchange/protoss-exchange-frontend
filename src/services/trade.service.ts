@@ -141,10 +141,10 @@ export const onSwapToken = async (
   const amountInNum = Number(amountIn);
   const amountOutMinNum = Number(amountOutMin);
   const uint256Input = bnToUint256(
-    BigInt(new bigDecimal(Number(amountInNum) * DECIMAL).getValue())
+    BigInt(bigDecimal.multiply(Number(amountInNum), DECIMAL).toString())
   );
   const uint256Output = bnToUint256(
-    BigInt(new bigDecimal(Number(amountOutMinNum) * DECIMAL).getValue())
+    BigInt(bigDecimal.multiply(Number(amountOutMinNum), DECIMAL).toString())
   );
   let minimumOut;
   if (!wallet) return;

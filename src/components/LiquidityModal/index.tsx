@@ -1,14 +1,21 @@
 import { Button, Modal } from "antd";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import TokenInput, { ITokenInputProps } from "../TokenInput";
+import bigDecimal from "js-big-decimal";
+import { addLiquidity } from "../../services/pool.service";
+import tokens from "../../enums/tokens";
+import { getChain } from "../../utils";
+import styles from "./index.module.css";
+import { WalletContext } from "../../context/WalletContext";
 
 interface ILiquidityModalProps extends ITokenInputProps {
   visible: boolean;
-  setVisible: (v: boolean) => void;
+  onCancel: () => void;
+  exchangeRate: string;
 }
 const LiquidityModal: FC<ILiquidityModalProps> = ({
   visible,
-  setVisible,
+  onCancel,
   inputValue,
   setFromCurrency,
   fromCurrency,
@@ -17,12 +24,24 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   toCurrency,
   outAmount,
   swapNumber,
+  exchangeRate,
 }) => {
+  const { wallet } = useContext(WalletContext);
+  const onConfirmLiquidityAdd = () => {
+    const token0 = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const token1 = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    if (!token0 || !token1 || !wallet) return;
+    addLiquidity(token0, token1, inputValue, outAmount, wallet, 0.01);
+  };
   return (
     <Modal
       title={"Add Liquidity"}
       visible={visible}
-      onCancel={() => setVisible(false)}
+      onCancel={onCancel}
       footer={null}
       bodyStyle={{
         display: "flex",
@@ -42,6 +61,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
         swapNumber={swapNumber}
       />
       <Button
+        onClick={onConfirmLiquidityAdd}
         style={{
           height: 60,
           width: 300,
@@ -54,6 +74,22 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
       >
         Add Liquidity
       </Button>
+      <div className={styles.liquidityInfo}>
+        <div className={styles.liquidityInfoItem}>
+          <span>{`${fromCurrency} per ${toCurrency}:`}</span>
+          <span>{exchangeRate}</span>
+        </div>
+        <div className={styles.liquidityInfoItem}>
+          <span> {`${toCurrency} per ${fromCurrency}:`}</span>
+          <span>
+            {exchangeRate !== "0" && bigDecimal.divide(1, exchangeRate, 6)}
+          </span>
+        </div>
+        <div className={styles.liquidityInfoItem}>
+          <span>Share of Pool:</span>
+          <span>0%</span>
+        </div>
+      </div>
     </Modal>
   );
 };

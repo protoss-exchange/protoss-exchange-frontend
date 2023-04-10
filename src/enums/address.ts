@@ -6,7 +6,15 @@ export const ROUTER_ADDRESSES: {
   [ChainId.MAINNET]:
     "0x07a6f98c03379b9513ca84cca1373ff452a7462a3b61598f0af5bb27ad7f76d1",
   [ChainId.TESTNET]:
-    "0x00975910cd99bc56bd289eaaa5cee6cd557f0ddafdb2ce6ebea15b158eb2c664",
+    "0x02e071eb551c4b084b751947ad172c3b210176ed2fc679c5e9c2cc47db91df2f",
+};
+
+export const FACTORY_ADDRESS: {
+  [chainId in ChainId]: string;
+} = {
+  [ChainId.MAINNET]: "",
+  [ChainId.TESTNET]:
+    "0x0017b7cdbd6dd86b4b9baf572e040e74bd44b419dcbb6f38a2e936aec9327b8e",
 };
 
 export const STARKNET_ID_ADDRESSES: {
@@ -17,3 +25,6 @@ export const STARKNET_ID_ADDRESSES: {
   [ChainId.TESTNET]:
     "0x05cf267a0af6101667013fc6bd3f6c11116a14cda9b8c4b1198520d59f900b17",
 };
+
+export const POOL_API =
+  "https://protoss-exchange-api-nrhq6ldrtq-an.a.run.app/pairs";

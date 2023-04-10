@@ -4,3 +4,54 @@
     margin-bottom: 12px;
     font-weight: 600;
 }
+
+.poolsBtn > button {
+    margin-right: 8px;
+    border-radius: 8px;
+    background-color: #00c6f3;
+}
+
+.poolsBtn {
+    margin-bottom: 16px;
+}
+
+.myPoolOperations {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myPoolOperations > button {
+    margin-right: 8px;
+    border-radius: 8px;
+}
+
+.myPoolItemContainer {
+    padding: 24px;
+    background-color: rgba(23,30,46,0.8);
+    margin-top: 8px;
+    width: 400px;
+    height: 80px;
+    overflow: hidden;
+    transition: height 0.2s ease-in;
+}
+
+.poolSymbol {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.myPoolItemContainerExpanded {
+    height: 246px
+}
+
+.poolInfoContainer {
+
+}
+
+.myPoolInfo {
+    padding-bottom: 12px
+}

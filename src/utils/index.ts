@@ -38,3 +38,18 @@ export function targetNetwork() {
   if (CHAIN_ID === "MAINNET") return "Mainnet";
   return "Goerli";
 }
+
+export function decimalStringToAscii(decimal: string) {
+  const bn = BigInt(decimal);
+  let str = "";
+  const bnHex = bn.toString(16);
+  for (let i = 0; i < bnHex.length; i += 2) {
+    const code = parseInt(bnHex.substring(i, i + 2), 16);
+    str += String.fromCharCode(code);
+  }
+  return str;
+}
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

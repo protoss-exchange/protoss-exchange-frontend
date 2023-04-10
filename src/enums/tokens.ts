@@ -81,24 +81,31 @@ export const tokens: ChainTokenList = {
     // ),
     new Token(
       ChainId.TESTNET,
-      "0x058e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb",
+      "0x58e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb",
       18,
       "TOA",
       "Token A"
     ),
     new Token(
       ChainId.TESTNET,
-      "0x0401d06bd0e3e0d2cca6eead7bb20ec5d6ad4f48a27b2ce00e416f89cbd5d011",
+      "0x401d06bd0e3e0d2cca6eead7bb20ec5d6ad4f48a27b2ce00e416f89cbd5d011",
       18,
       "TOB",
       "Token B"
     ),
     new Token(
       ChainId.TESTNET,
-      "0x06f5a85cfdadca8a90f7b99c99afd992a149e853a641257db99cf50bc2093ed7",
+      "0x6f5a85cfdadca8a90f7b99c99afd992a149e853a641257db99cf50bc2093ed7",
       18,
       "TOC",
       "Token C"
+    ),
+    new Token(
+      ChainId.TESTNET,
+      "0x55ce6e2c9f7e962ceddce755ac5dbed6415d206d5435631557d1d75c44d3149",
+      18,
+      "TOD",
+      "Token D"
     ),
   ],
 };
