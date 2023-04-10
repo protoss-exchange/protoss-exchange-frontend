@@ -4,3 +4,17 @@
     margin-bottom: 12px;
     font-weight: 600;
 }
+
+.poolsBtn > button {
+    margin-right: 8px;
+    border-radius: 8px;
+    background-color: #00c6f3;
+}
+
+.poolsBtn {
+    margin-bottom: 16px;
+}
+
+.myPoolOperations {
+    margin-top: 8px;
+}
