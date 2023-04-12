@@ -23,8 +23,8 @@ import {
 import axios from "axios";
 import { getToken } from "../utils";
 import { bnToUint256, Uint256, uint256ToBN } from "starknet/utils/uint256";
-import { hexToDecimalString } from "starknet/utils/number";
 import { StarknetWindowObject } from "get-starknet";
+import { PairInfo } from "./pool.service";
 
 export interface AllPairItem {
   token0: {
@@ -67,27 +67,52 @@ export const allCommonPairs = (currencyA: Token, currencyB: Token) => {
 
 export const tradeExactIn = async (
   currencyAAmount: TokenAmount | undefined,
+  allPairs: PairInfo[],
   currencyB: Token
-): Promise<Trade | null> => {
+): Promise<string | null> => {
   if (!currencyAAmount) return null;
   const currencyA = currencyAAmount.token;
-  const address = Pair.getAddress(currencyA, currencyB);
+  let swapToken = false;
+  const address = allPairs.filter((item) => {
+    if (
+      item.token1?.address === currencyA.address &&
+      item.token0?.address === currencyB.address
+    ) {
+      swapToken = true;
+      return true;
+    }
+    if (
+      item.token0?.address === currencyA.address &&
+      item.token1?.address === currencyB.address
+    ) {
+      return true;
+    }
+  })[0].address;
   const contract = new Contract(
     ProtossSwapPairABI as Abi,
     address,
     defaultProvider
   );
   const { reserve0, reserve1 } = await contract.call("getReserves");
-  const possiblePairs = [
-    new Pair(
-      new TokenAmount(currencyA, reserve0.toString()),
-      new TokenAmount(currencyB, reserve1.toString())
-    ),
-  ];
-  return Trade.bestTradeExactIn(possiblePairs, currencyAAmount, currencyB, {
-    maxHops: 3,
-    maxNumResults: 1,
-  })[0];
+  // const possiblePairs = [
+  //   new Pair(
+  //     new TokenAmount(currencyA, reserve0.toString()),
+  //     new TokenAmount(currencyB, reserve1.toString())
+  //   ),
+  // ];
+  // return Trade.bestTradeExactIn(possiblePairs, currencyAAmount, currencyB, {
+  //   maxHops: 3,
+  //   maxNumResults: 1,
+  // })[0];
+  return swapToken
+    ? bigDecimal.multiply(
+        bigDecimal.divide(reserve0.toString(), reserve1.toString(), 6),
+        currencyAAmount.toFixed(currencyB.decimals)
+      )
+    : bigDecimal.multiply(
+        bigDecimal.divide(reserve1.toString(), reserve0.toString(), 6),
+        currencyAAmount.toFixed(currencyA.decimals)
+      );
 };
 
 export async function getAllPairs(chainId: ChainId) {
@@ -167,7 +192,7 @@ export const onSwapToken = async (
         entrypoint: "approve",
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         contractAddress: fromCurrency.address,
-        calldata: [ROUTER_ADDRESS, 1000, 100],
+        calldata: [ROUTER_ADDRESS, 10000, 10],
       },
       {
         entrypoint: "swapExactTokensForTokens",

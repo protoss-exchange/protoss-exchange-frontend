@@ -1,4 +1,4 @@
-import { tradeExactIn } from "services/trade.service";
+import { onSwapToken, tradeExactIn } from "services/trade.service";
 import { tokens } from "enums/tokens";
 import { getChain } from "utils";
 import { tryParseAmount } from "utils/maths";
@@ -8,7 +8,6 @@ import { WalletContext } from "context/WalletContext";
 import { getBalance } from "services/balances.service";
 import styles from "./index.module.css";
 import { TokenInput } from "components";
-import { onSwapToken } from "services/trade.service";
 import { SettingOutlined } from "@ant-design/icons";
 
 const Swap = () => {
@@ -22,7 +21,7 @@ const Swap = () => {
   const [slippage, setSlippage] = useState(1);
   const [slippageAdjustVisible, setSlippageAdjustVisible] = useState(false);
   const [inputInvalid, setInputInvalid] = useState(false);
-  const { wallet, validNetwork } = useContext(WalletContext);
+  const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
   const onSwap = async () => {
     if (!fromCurrency || !toCurrency) return;
@@ -33,13 +32,13 @@ const Swap = () => {
     const outputToken = tokens[getChain()].filter(
       (item) => item.symbol === toCurrency
     )[0];
-
-    tradeExactIn(tryParseAmount(inputValue, inputToken), outputToken).then(
-      (ret) => {
-        const outAmount = ret?.outputAmount.toSignificant(10);
-        setOutAmount(Number(outAmount) || 0);
-      }
-    );
+    tradeExactIn(
+      tryParseAmount(inputValue, inputToken),
+      allPairs,
+      outputToken
+    ).then((ret) => {
+      setOutAmount(Number(ret) || 0);
+    });
     if (wallet && validNetwork) {
       const inputBalance = await getBalance(wallet, inputToken.address);
       if (Number(inputBalance) < Number(inputValue)) {

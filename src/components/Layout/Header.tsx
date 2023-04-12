@@ -5,6 +5,7 @@ import { walletService } from "services/wallet.service";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "context/WalletContext";
 import { confirmNetwork, inCorrectNetwork, targetNetwork } from "utils";
+import { getAllPoolPairs } from "../../services/pool.service";
 
 export const Header = () => {
   const location = useLocation();

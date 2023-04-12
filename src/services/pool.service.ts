@@ -1,15 +1,12 @@
 import { Abi, Contract } from "starknet";
-import protossFactoryAbi from "abi/protoss_factory_abi.json";
 import protossPairAbi from "abi/protoss_pair_abi.json";
-import protossErc20Abi from "abi/protoss_erc20_abi.json";
 import protossRouterAbi from "abi/protoss_router_abi.json";
 import { defaultProvider } from "../constants";
-import { bnToUint256, uint256ToBN } from "starknet/utils/uint256";
+import { bnToUint256, Uint256 } from "starknet/utils/uint256";
 import { hexToDecimalString, toHex } from "starknet/utils/number";
-import { decimalToHex, uint256ToHex, uint256ToReadable } from "utils/maths";
-import { decimalStringToAscii, getChain, sleep } from "utils";
+import { uint256ToReadable } from "utils/maths";
+import { getChain } from "utils";
 import { StarknetWindowObject } from "get-starknet";
-import { JSBI } from "protoss-exchange-sdk";
 import { Token } from "protoss-exchange-sdk";
 import tokens from "enums/tokens";
 import { POOL_API, ROUTER_ADDRESSES } from "enums/address";
@@ -20,7 +17,7 @@ export interface PairInfo {
   // name: string,
   address: string;
   totalSupply: string;
-  balances: string;
+  balances?: string;
   decimals: number;
   reserve0: string;
   reserve1: string;
@@ -41,10 +38,7 @@ export interface PairInfoResponse {
   token1: { address: string; decimals: number; name: string; symbol: string };
   totalSupply: string;
 }
-export const getAllPoolPairs = async (
-  wallet: StarknetWindowObject | null
-): Promise<PairInfo[]> => {
-  if (!wallet) return [];
+export const getAllPoolPairs = async (): Promise<PairInfo[]> => {
   // let ret: PairInfo[] = [];
   // const contract = new Contract(protossFactoryAbi as Abi, '0x678950106a6e2d23ed2f38b3b645ea48e994a9d009c9aa7f8ef3f8b6434fb5e', defaultProvider);
   // const allPairs = await contract.call('allPairsLength')
@@ -99,14 +93,6 @@ export const getAllPoolPairs = async (
     for (const item of pairs.data.data ?? []) {
       const token0Address = item.token0.address.substring(2);
       const token1Address = item.token1.address.substring(2);
-      const pairContract = new Contract(
-        protossPairAbi as Abi,
-        item.pairAddress,
-        defaultProvider
-      );
-      const balances = await pairContract.call("balanceOf", [
-        wallet.account?.address,
-      ]);
       ret.push({
         address: item.pairAddress,
         decimals: item.decimals,
@@ -123,12 +109,32 @@ export const getAllPoolPairs = async (
             item.address.toLowerCase().includes(token1Address)
           )[0] ?? undefined,
         totalSupply: item.totalSupply,
-        balances: uint256ToReadable(balances[0]),
       } as PairInfo);
     }
     return ret;
   }
   return [];
+};
+
+export const getPairBalances = async (
+  allPairs: PairInfo[],
+  wallet: StarknetWindowObject
+): Promise<PairInfo[]> => {
+  let ret: PairInfo[] = [];
+  for (const pair of allPairs) {
+    const pairContract = new Contract(
+      protossPairAbi as Abi,
+      pair.address,
+      defaultProvider
+    );
+    const balances = await pairContract.call("balanceOf", [
+      wallet.account?.address,
+    ]);
+    const myBalances = uint256ToReadable(balances[0]);
+    if (myBalances !== "0")
+      ret.push({ ...pair, balances: uint256ToReadable(balances[0]) });
+  }
+  return ret;
 };
 
 export const getReserveUpdate = async (address: string) => {
@@ -141,13 +147,33 @@ export const getReserveUpdate = async (address: string) => {
   return { reserve0, reserve1 };
 };
 
+export const getQuota = async (
+  reserve0: Uint256,
+  reserve1: Uint256,
+  amountIn: Uint256
+) => {
+  const routerContract = new Contract(
+    protossRouterAbi as Abi,
+    ROUTER_ADDRESSES[getChain()],
+    defaultProvider
+  );
+  const ret = await routerContract.call("quote", [
+    [amountIn.low, amountIn.high],
+    reserve0.toString(),
+    reserve1.toString(),
+  ]);
+  // console.log(uint256ToReadable(ret[0]));
+  return uint256ToReadable(ret[0]);
+};
+
 export const addLiquidity = async (
   tokenA: Token,
   tokenB: Token,
   amountIn: string | number,
   amountOut: string | number,
-  wallet: StarknetWindowObject,
-  slippage: number
+  reserve0: any,
+  reserve1: any,
+  wallet: StarknetWindowObject
 ) => {
   const uint256Input = bnToUint256(
     BigInt(bigDecimal.multiply(Number(amountIn), DECIMAL).toString())
@@ -155,31 +181,13 @@ export const addLiquidity = async (
   const uint256Output = bnToUint256(
     BigInt(bigDecimal.multiply(Number(amountOut), DECIMAL).toString())
   );
+  // TODO: Fix slippage to 0.1%
   const uint256AmountInMin = bnToUint256(
-    BigInt(
-      bigDecimal.multiply(Number(amountIn) * (1 - slippage), DECIMAL).toString()
-    )
+    BigInt(bigDecimal.multiply(Number(amountIn) * 0.999, DECIMAL).toString())
   );
   const uint256AmountOutMin = bnToUint256(
-    BigInt(
-      bigDecimal
-        .multiply(Number(amountOut) * (1 - slippage), DECIMAL)
-        .toString()
-    )
+    BigInt(bigDecimal.multiply(Number(amountOut) * 0.999, DECIMAL).toString())
   );
-  const routerContract = new Contract(
-    protossRouterAbi as Abi,
-    ROUTER_ADDRESSES[getChain()],
-    defaultProvider
-  );
-  // wallet.account?.execute([
-  //   {
-  //     entrypoint: "approve",
-  //     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  //     contractAddress: tokenA.address,
-  //     calldata: [ROUTER_ADDRESS, 1000, 100],
-  //   },
-  // ])
   wallet.account?.execute([
     {
       entrypoint: "approve",
@@ -210,18 +218,6 @@ export const addLiquidity = async (
       ],
     },
   ]);
-  // const ret = await routerContract.invoke("addLiquidity", [
-  //   tokenA.address,
-  //   tokenB.address,
-  //   uint256Input,
-  //   uint256Output,
-  //   uint256AmountInMin,
-  //   uint256AmountOutMin,
-  //   wallet.account?.address,
-  //   Math.floor(Date.now() / 1000) + 86400,
-  // ]);
-  // console.log(ret);
-  // return ret;
 };
 
 export const removeLiquidity = () => {};
