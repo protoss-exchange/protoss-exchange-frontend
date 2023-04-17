@@ -6,13 +6,13 @@ import { PairInfo } from "services/pool.service";
 import bigDecimal from "js-big-decimal";
 import { hexToDecimalString } from "starknet/utils/number";
 import { useUpdateReserves } from "hooks/useUpdateReserves";
+import Withdraw from "components/Withdraw";
 const cx = classNames.bind(styles);
 interface IMyPoolItem {
   poolTokens: string;
   token0Symbol: string;
   token1Symbol: string;
   onAddLiquidity: () => void;
-  onWithdraw: () => void;
   pair: PairInfo;
 }
 
@@ -21,10 +21,10 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
   token0Symbol,
   token1Symbol,
   onAddLiquidity,
-  onWithdraw,
   pair,
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const [withdrawVisible, setWithdrawVisible] = useState(false);
   const { reserve0, reserve1, reservePolling, updateReserveValues } =
     useUpdateReserves();
   const [token0Share, setToken0Share] = useState("0");
@@ -59,6 +59,10 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
     if (expanded) clearInterval(reservePolling);
     else updateReserveValues(pair);
     setExpanded((prev) => !prev);
+  };
+
+  const onWithdraw = () => {
+    setWithdrawVisible(true);
   };
 
   useEffect(() => {
@@ -100,6 +104,15 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
           </div>
         </div>
       </div>
+      <Withdraw
+        visible={withdrawVisible}
+        setVisible={setWithdrawVisible}
+        token0Share={token0Share}
+        token1Share={token1Share}
+        token0Symbol={token0Symbol}
+        token1Symbol={token1Symbol}
+        liquidity={poolTokens}
+      />
     </div>
   );
 };

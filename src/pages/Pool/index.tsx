@@ -125,7 +125,6 @@ const Pool = () => {
             token1Symbol={pair.token1?.symbol || "TOB"}
             onAddLiquidity={() => onAdd(pair)}
             pair={pair}
-            onWithdraw={() => alert("implementing")}
           />
         ))
       )}

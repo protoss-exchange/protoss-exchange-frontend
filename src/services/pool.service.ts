@@ -220,4 +220,59 @@ export const addLiquidity = async (
   ]);
 };
 
-export const removeLiquidity = () => {};
+export const removeLiquidity = (
+  tokenA: Token,
+  tokenB: Token,
+  pairAddress: string,
+  liquidity: string,
+  amountIn: string | number,
+  amountOut: string | number,
+  wallet: StarknetWindowObject
+) => {
+  const uint256Liquidity = bnToUint256(
+    bigDecimal.multiply(liquidity, DECIMAL).toString()
+  );
+  // TODO: Fix slippage to 0.1%
+  console.log(tokenA.decimals, tokenB.decimals);
+  const uint256AmountInMin = bnToUint256(
+    BigInt(
+      bigDecimal
+        .multiply(Number(amountIn) * 0.999, Math.pow(10, tokenA.decimals))
+        .toString()
+    )
+  );
+  const uint256AmountOutMin = bnToUint256(
+    BigInt(
+      bigDecimal
+        .multiply(Number(amountOut) * 0.999, Math.pow(10, tokenB.decimals))
+        .toString()
+    )
+  );
+  const amountApprove = bnToUint256(
+    bigDecimal.multiply(999999, DECIMAL).toString()
+  );
+  console.log(pairAddress)
+  wallet.account?.execute([
+    {
+      entrypoint: "approve",
+      contractAddress: pairAddress,
+      calldata: [ROUTER_ADDRESS, amountApprove.low, amountApprove.high],
+    },
+    {
+      entrypoint: "removeLiquidity",
+      contractAddress: ROUTER_ADDRESS_DECIMAL,
+      calldata: [
+        tokenA.address,
+        tokenB.address,
+        uint256Liquidity.low,
+        uint256Liquidity.high,
+        uint256AmountInMin.low,
+        uint256AmountInMin.high,
+        uint256AmountOutMin.low,
+        uint256AmountOutMin.high,
+        wallet.account?.address,
+        Math.floor(Date.now() / 1000) + 86400,
+      ],
+    },
+  ]);
+};

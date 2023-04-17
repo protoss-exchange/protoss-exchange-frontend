@@ -22,7 +22,7 @@ import {
 } from "enums";
 import axios from "axios";
 import { getToken } from "../utils";
-import { bnToUint256, Uint256, uint256ToBN } from "starknet/utils/uint256";
+import { bnToUint256 } from "starknet/utils/uint256";
 import { StarknetWindowObject } from "get-starknet";
 import { PairInfo } from "./pool.service";
 
