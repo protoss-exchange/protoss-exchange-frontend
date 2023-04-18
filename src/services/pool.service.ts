@@ -251,7 +251,7 @@ export const removeLiquidity = (
   const amountApprove = bnToUint256(
     bigDecimal.multiply(999999, DECIMAL).toString()
   );
-  console.log(pairAddress)
+  console.log(pairAddress);
   wallet.account?.execute([
     {
       entrypoint: "approve",

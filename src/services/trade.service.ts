@@ -186,6 +186,9 @@ export const onSwapToken = async (
     ROUTER_ADDRESS,
   ]);
   if (minimumOut && minimumOut > amountOutMinNum) return;
+  const uint256MinimunOut = bnToUint256(
+    BigInt(bigDecimal.multiply(minimumOut, DECIMAL).toString())
+  );
   const ret2 = await wallet.account?.execute(
     [
       {
@@ -200,8 +203,8 @@ export const onSwapToken = async (
         calldata: [
           uint256Input.low,
           uint256Input.high,
-          uint256Output.low,
-          uint256Output.high,
+          uint256MinimunOut.low,
+          uint256MinimunOut.high,
           "2",
           fromCurrency.address,
           toCurrency.address,
