@@ -1,4 +1,4 @@
-import React, { lazy, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
 import "./App.less";
 import { PageLayout } from "components";
@@ -8,9 +8,16 @@ import Pool from "pages/Pool";
 import Wip from "./pages/Wip";
 import { WalletContext } from "context/WalletContext";
 import { StarknetWindowObject } from "get-starknet";
+import { getAllPoolPairs, PairInfo } from "./services/pool.service";
 function App() {
   const [wallet, setWallet] = useState<StarknetWindowObject | null>(null);
   const [validNetwork, setValidNetwork] = useState(false);
+  const [allPairs, setAllPairs] = useState<PairInfo[]>([]);
+  useEffect(() => {
+    getAllPoolPairs().then((ret) => {
+      setAllPairs(ret);
+    });
+  }, []);
   return (
     <Router>
       <WalletContext.Provider
@@ -19,6 +26,8 @@ function App() {
           setWallet,
           validNetwork,
           setValidNetwork,
+          allPairs,
+          setAllPairs,
         }}
       >
         <Switch>
