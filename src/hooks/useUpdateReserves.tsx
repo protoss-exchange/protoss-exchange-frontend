@@ -19,7 +19,7 @@ export const useUpdateReserves = () => {
         setReserve0(reserve0);
         setReserve1(reserve1);
       });
-    }, 15000);
+    }, 6000);
     setReservePolling(intervalId);
   };
   return {

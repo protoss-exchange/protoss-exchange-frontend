@@ -3,8 +3,8 @@ import { FC, useContext } from "react";
 import TokenInput, { ITokenInputProps } from "../TokenInput";
 import bigDecimal from "js-big-decimal";
 import { addLiquidity } from "../../services/pool.service";
-import tokens from "../../enums/tokens";
-import { getChain } from "../../utils";
+import tokens from "enums/tokens";
+import { getChain } from "utils";
 import styles from "./index.module.css";
 import { WalletContext } from "../../context/WalletContext";
 
@@ -12,6 +12,8 @@ interface ILiquidityModalProps extends ITokenInputProps {
   visible: boolean;
   onCancel: () => void;
   exchangeRate: string;
+  reserve0: any;
+  reserve1: any;
 }
 const LiquidityModal: FC<ILiquidityModalProps> = ({
   visible,
@@ -23,6 +25,8 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   setToCurrency,
   toCurrency,
   outAmount,
+  reserve0,
+  reserve1,
   swapNumber,
   exchangeRate,
 }) => {
@@ -35,7 +39,15 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
       (item) => item.symbol === toCurrency
     )[0];
     if (!token0 || !token1 || !wallet) return;
-    addLiquidity(token0, token1, inputValue, outAmount, wallet, 0.01);
+    addLiquidity(
+      token0,
+      token1,
+      inputValue,
+      outAmount,
+      reserve0,
+      reserve1,
+      wallet
+    );
   };
   return (
     <Modal

@@ -1,7 +1,8 @@
 import { toBN } from "starknet/utils/number";
-import { ChainId } from "protoss-exchange-sdk";
+import { ChainId, Token } from "protoss-exchange-sdk";
 import tokens from "enums/tokens";
 import { StarknetWindowObject } from "get-starknet";
+import { PairInfo } from "../services/pool.service";
 const { REACT_APP_CHAIN_ID: CHAIN_ID } = process.env;
 export function isEqualsAddress(addressA: string, addressB: string): boolean {
   return toBN(addressA).eq(toBN(addressB));
@@ -52,4 +53,18 @@ export function decimalStringToAscii(decimal: string) {
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function getPairAddress(
+  allPairs: PairInfo[],
+  token0: Token,
+  token1: Token
+) {
+  return (
+    allPairs.filter(
+      (item) =>
+        item.token0?.address === token0.address &&
+        item.token1?.address === token1.address
+    )[0].address ?? ""
+  );
 }

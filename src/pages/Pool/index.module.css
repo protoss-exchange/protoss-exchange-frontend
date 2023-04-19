@@ -13,6 +13,13 @@
 
 .poolsBtn {
     margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.poolsBtn > span {
+    align-self: center !important;
+    margin-left: 16px;
 }
 
 .myPoolOperations {
