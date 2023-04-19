@@ -1,0 +1,9 @@
+.slippageContainer {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.slippageContainer > button {
+    margin-left: 8px;
+}

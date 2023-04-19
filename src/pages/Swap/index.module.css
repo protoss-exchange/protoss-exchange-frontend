@@ -44,15 +44,6 @@
   background-color: #0070f3;
 }
 
-.slippageContainer {
-  margin-top: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.slippageContainer > button {
-  margin-left: 8px;
-}
 .swapDetail {
   color: #999999;
   font-size: 12px;

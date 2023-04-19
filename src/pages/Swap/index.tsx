@@ -9,6 +9,7 @@ import { getBalance } from "services/balances.service";
 import styles from "./index.module.css";
 import { TokenInput } from "components";
 import { SettingOutlined } from "@ant-design/icons";
+import Slippage from "../../components/Slippage";
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState(
@@ -85,30 +86,7 @@ const Swap = () => {
 
   return (
     <div className={styles.swapContainer}>
-      <SettingOutlined
-        onClick={() => setSlippageAdjustVisible(true)}
-        style={{ fontSize: 24, alignSelf: "self-end", color: "#fff" }}
-      />
-      <Modal
-        visible={slippageAdjustVisible}
-        onCancel={() => setSlippageAdjustVisible(false)}
-        footer={null}
-      >
-        <div style={{ fontSize: 24, fontWeight: 600 }}>
-          Set Slippage Tolerance:
-        </div>
-        <div className={styles.slippageContainer}>
-          {[0.2, 0.5, 1, 2].map((num) => (
-            <Button
-              type={slippage === num ? "primary" : "default"}
-              onClick={() => setSlippage(num)}
-            >
-              {num}%
-            </Button>
-          ))}
-          <div style={{ marginLeft: 20 }}>Current Slippage: {slippage}%</div>
-        </div>
-      </Modal>
+      <Slippage slippage={slippage} setSlippage={setSlippage} />
       <TokenInput
         inputValue={inputValue}
         setInputValue={setInputValue}

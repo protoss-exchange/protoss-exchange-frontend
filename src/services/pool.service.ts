@@ -227,31 +227,45 @@ export const removeLiquidity = (
   liquidity: string,
   amountIn: string | number,
   amountOut: string | number,
-  wallet: StarknetWindowObject
+  wallet: StarknetWindowObject,
+  withdrawSlippage: number
 ) => {
   const uint256Liquidity = bnToUint256(
     bigDecimal.multiply(liquidity, DECIMAL).toString()
   );
-  // TODO: Fix slippage to 0.1%
-  console.log(tokenA.decimals, tokenB.decimals);
   const uint256AmountInMin = bnToUint256(
     BigInt(
       bigDecimal
-        .multiply(Number(amountIn) * 0.999, Math.pow(10, tokenA.decimals))
+        .multiply(
+          Number(amountIn) * (1 - withdrawSlippage / 100),
+          Math.pow(10, tokenA.decimals)
+        )
         .toString()
     )
   );
   const uint256AmountOutMin = bnToUint256(
     BigInt(
       bigDecimal
-        .multiply(Number(amountOut) * 0.999, Math.pow(10, tokenB.decimals))
+        .multiply(
+          Number(amountOut) * (1 - withdrawSlippage / 100),
+          Math.pow(10, tokenB.decimals)
+        )
         .toString()
     )
   );
   const amountApprove = bnToUint256(
-    bigDecimal.multiply(999999, DECIMAL).toString()
+    bigDecimal.multiply(99999999999999, DECIMAL).toString()
   );
-  console.log(pairAddress);
+  console.log(
+    amountIn,
+    bigDecimal
+      .multiply(Number(amountIn) * 0.99, Math.pow(10, tokenA.decimals))
+      .toString(),
+    amountOut,
+    bigDecimal
+      .multiply(Number(amountOut) * 0.99, Math.pow(10, tokenA.decimals))
+      .toString()
+  );
   wallet.account?.execute([
     {
       entrypoint: "approve",

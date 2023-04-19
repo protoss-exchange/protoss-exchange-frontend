@@ -1,5 +1,5 @@
 import { Modal } from "antd";
-import { FC, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import styles from "./index.module.css";
 import classnames from "classnames/bind";
 import { Slider } from "antd";
@@ -8,7 +8,7 @@ import { removeLiquidity } from "services/pool.service";
 import tokens from "enums/tokens";
 import { getChain } from "utils";
 import { WalletContext } from "context/WalletContext";
-import { getPairAddress } from "protoss-exchange-sdk";
+import { getPairAddress } from "utils";
 
 const cx = classnames.bind(styles);
 const marks = {
@@ -26,6 +26,7 @@ interface IWithdraw {
   token0Symbol: string;
   token1Symbol: string;
   liquidity: string;
+  withdrawSlippage: number;
 }
 const Withdraw: FC<IWithdraw> = (props) => {
   const {
@@ -36,18 +37,29 @@ const Withdraw: FC<IWithdraw> = (props) => {
     token0Symbol,
     token1Symbol,
     liquidity,
+    withdrawSlippage,
   } = props;
-  const { wallet } = useContext(WalletContext);
+  const { wallet, allPairs } = useContext(WalletContext);
   const [token0Withdrawn, setToken0Withdrawn] = useState(
     bigDecimal.multiply(token0Share, 0.25)
   );
   const [token1Withdrawn, setToken1Withdrawn] = useState(
     bigDecimal.multiply(token1Share, 0.25)
   );
+  const [shareWithdrawn, setShareWithdrawn] = useState(
+    bigDecimal.multiply(liquidity, 0.25)
+  );
   const onWithdrawAmountChanged = (ratio: number) => {
+    setShareWithdrawn(bigDecimal.multiply(liquidity, ratio / 100));
     setToken0Withdrawn(bigDecimal.multiply(token0Share, ratio / 100));
     setToken1Withdrawn(bigDecimal.multiply(token1Share, ratio / 100));
   };
+
+  useEffect(() => {
+    setToken0Withdrawn(bigDecimal.multiply(token0Share, 0.25));
+    setToken1Withdrawn(bigDecimal.multiply(token1Share, 0.25));
+    setShareWithdrawn(bigDecimal.multiply(liquidity, 0.25));
+  }, [token0Share, token1Share, liquidity]);
 
   const onRemoveLiquidity = () => {
     const token0 = tokens[getChain()].filter(
@@ -60,11 +72,12 @@ const Withdraw: FC<IWithdraw> = (props) => {
     removeLiquidity(
       token0,
       token1,
-      getPairAddress(token0, token1),
-      liquidity,
+      getPairAddress(allPairs, token0, token1),
+      shareWithdrawn,
       token0Withdrawn,
       token1Withdrawn,
-      wallet
+      wallet,
+      withdrawSlippage
     );
   };
   return (

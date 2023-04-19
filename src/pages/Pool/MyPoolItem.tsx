@@ -14,6 +14,7 @@ interface IMyPoolItem {
   token1Symbol: string;
   onAddLiquidity: () => void;
   pair: PairInfo;
+  withdrawSlippage: number;
 }
 
 export const MyPoolItem: FC<IMyPoolItem> = ({
@@ -22,6 +23,7 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
   token1Symbol,
   onAddLiquidity,
   pair,
+  withdrawSlippage,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [withdrawVisible, setWithdrawVisible] = useState(false);
@@ -112,6 +114,7 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
         token0Symbol={token0Symbol}
         token1Symbol={token1Symbol}
         liquidity={poolTokens}
+        withdrawSlippage={withdrawSlippage}
       />
     </div>
   );

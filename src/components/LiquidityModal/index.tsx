@@ -3,8 +3,8 @@ import { FC, useContext } from "react";
 import TokenInput, { ITokenInputProps } from "../TokenInput";
 import bigDecimal from "js-big-decimal";
 import { addLiquidity } from "../../services/pool.service";
-import tokens from "../../enums/tokens";
-import { getChain } from "../../utils";
+import tokens from "enums/tokens";
+import { getChain } from "utils";
 import styles from "./index.module.css";
 import { WalletContext } from "../../context/WalletContext";
 

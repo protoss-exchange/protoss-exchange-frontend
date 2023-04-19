@@ -12,6 +12,7 @@ import { WalletContext } from "context/WalletContext";
 import bigDecimal from "js-big-decimal";
 import { MyPoolItem } from "./MyPoolItem";
 import { useUpdateReserves } from "hooks/useUpdateReserves";
+import Slippage from "../../components/Slippage";
 const Pool = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -20,6 +21,7 @@ const Pool = () => {
   const [outAmount, setOutAmount] = useState(0);
   const [myPools, setMyPools] = useState<PairInfo[]>([]);
   const [exchangeRate, setExchangeRate] = useState("0");
+  const [withdrawSlippage, setWithdrawSlippage] = useState(1);
   const {
     reserve0,
     reserve1,
@@ -108,6 +110,10 @@ const Pool = () => {
         <Button ghost={showAllPools} onClick={() => setShowAllPools(false)}>
           My Pools
         </Button>
+        <Slippage
+          slippage={withdrawSlippage}
+          setSlippage={setWithdrawSlippage}
+        />
       </div>
       {showAllPools ? (
         <Table
@@ -125,6 +131,7 @@ const Pool = () => {
             token1Symbol={pair.token1?.symbol || "TOB"}
             onAddLiquidity={() => onAdd(pair)}
             pair={pair}
+            withdrawSlippage={withdrawSlippage}
           />
         ))
       )}
