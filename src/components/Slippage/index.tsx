@@ -1,5 +1,5 @@
 import styles from "./index.module.css";
-import { Button, Modal } from "antd";
+import { Button, InputNumber, Modal } from "antd";
 import { FC, useState } from "react";
 import { SettingOutlined } from "@ant-design/icons";
 interface ISlippage {
@@ -19,6 +19,8 @@ const Slippage: FC<ISlippage> = (props) => {
         visible={slippageAdjustVisible}
         onCancel={() => setSlippageAdjustVisible(false)}
         footer={null}
+        width={550}
+        centered
       >
         <div style={{ fontSize: 24, fontWeight: 600 }}>
           Set Slippage Tolerance:
@@ -32,6 +34,15 @@ const Slippage: FC<ISlippage> = (props) => {
               {num}%
             </Button>
           ))}
+          <div className={styles.slippageInput}>
+            <InputNumber
+              value={slippage}
+              onChange={(v) => setSlippage(Number(v))}
+              min={0}
+              max={100}
+              style={{ marginLeft: 12 }}
+            />
+          </div>
           <div style={{ marginLeft: 20 }}>Current Slippage: {slippage}%</div>
         </div>
       </Modal>

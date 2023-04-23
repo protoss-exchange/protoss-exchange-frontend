@@ -51,6 +51,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   };
   return (
     <Modal
+      centered
       title={"Add Liquidity"}
       visible={visible}
       onCancel={onCancel}
