@@ -48,7 +48,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         <span className={styles.indicator}>FROM</span>
         <Input
           placeholder="0.0"
-          style={{ width: 220 }}
+          style={{ width: 280 }}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
@@ -62,7 +62,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           </Select>
           <div className={styles.balanceBox}>
             {!wallet ? (
-              <span className={styles.balance}>Connect your wallet first</span>
+              <span className={styles.balance}>Connect your wallet</span>
             ) : validNetwork ? (
               <>
                 <Text className={styles.balance} ellipsis={true}>
@@ -100,7 +100,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         <Input
           placeholder="0.0"
           value={outAmount.toFixed(6)}
-          style={{ width: 220, backgroundColor: "transparent", color: "#fff" }}
+          style={{ width: 280, backgroundColor: "transparent", color: "#fff" }}
         />
         <Select
           value={toCurrency}

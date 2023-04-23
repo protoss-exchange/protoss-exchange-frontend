@@ -116,7 +116,7 @@ const Pool = () => {
           <span>Connect your wallet first.</span>
         </div>
       );
-    if (isFetching || initialFetching)
+    if (initialFetching || isFetching)
       return (
         <div
           style={{
