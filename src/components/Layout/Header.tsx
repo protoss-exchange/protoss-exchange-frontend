@@ -5,7 +5,7 @@ import { walletService } from "services/wallet.service";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "context/WalletContext";
 import { confirmNetwork, inCorrectNetwork, targetNetwork } from "utils";
-import { getAllPoolPairs } from "../../services/pool.service";
+import logo from "assets/logo192.png";
 
 export const Header = () => {
   const location = useLocation();
@@ -75,6 +75,7 @@ export const Header = () => {
   };
   return (
     <div className={styles.header}>
+      <img alt={"logo"} width={64} src={logo} />
       <div className={styles.nav}>
         {routes.map((route) => (
           <div

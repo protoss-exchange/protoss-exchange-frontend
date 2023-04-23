@@ -45,6 +45,7 @@ const TokenInput: FC<ITokenInputProps> = ({
   return (
     <>
       <div className={styles.fromCurrency}>
+        <span className={styles.indicator}>FROM</span>
         <Input
           placeholder="0.0"
           style={{ width: 220 }}
@@ -95,6 +96,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         <div style={{ margin: 10 }} />
       )}
       <div className={styles.toCurrency}>
+        <span className={styles.indicator}>TO</span>
         <Input
           placeholder="0.0"
           value={outAmount.toFixed(6)}

@@ -13,6 +13,7 @@ import bigDecimal from "js-big-decimal";
 import { MyPoolItem } from "./MyPoolItem";
 import { useUpdateReserves } from "hooks/useUpdateReserves";
 import Slippage from "../../components/Slippage";
+import { LoadingOutlined } from "@ant-design/icons";
 const Pool = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -32,7 +33,7 @@ const Pool = () => {
     reservePolling,
     updateReserveValues,
   } = useUpdateReserves();
-  const { wallet, allPairs } = useContext(WalletContext);
+  const { wallet, allPairs, initialFetching } = useContext(WalletContext);
   useEffect(() => {
     if (!wallet) return;
     setIsFetching(true);
@@ -100,6 +101,46 @@ const Pool = () => {
       },
     },
   ];
+
+  const generateMyPoolItems = () => {
+    if (!wallet)
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 16,
+          }}
+        >
+          <span>Connect your wallet first.</span>
+        </div>
+      );
+    if (isFetching || initialFetching)
+      return (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 16,
+          }}
+        >
+          <LoadingOutlined style={{ fontSize: 32 }} />
+        </div>
+      );
+    return myPools.map((pair) => (
+      <MyPoolItem
+        key={pair.address}
+        poolTokens={pair?.balances || "0"}
+        token0Symbol={pair.token0?.symbol || "TOA"}
+        token1Symbol={pair.token1?.symbol || "TOB"}
+        onAddLiquidity={() => onAdd(pair)}
+        pair={pair}
+        withdrawSlippage={withdrawSlippage}
+      />
+    ));
+  };
   return (
     <div>
       <div className={styles.header}>Pools Overview</div>
@@ -120,20 +161,10 @@ const Pool = () => {
           dataSource={allPairs}
           columns={columns}
           pagination={false}
-          loading={isFetching}
+          loading={isFetching || initialFetching}
         />
       ) : (
-        myPools.map((pair) => (
-          <MyPoolItem
-            key={pair.address}
-            poolTokens={pair?.balances || "0"}
-            token0Symbol={pair.token0?.symbol || "TOA"}
-            token1Symbol={pair.token1?.symbol || "TOB"}
-            onAddLiquidity={() => onAdd(pair)}
-            pair={pair}
-            withdrawSlippage={withdrawSlippage}
-          />
-        ))
+        generateMyPoolItems()
       )}
       <LiquidityModal
         visible={modalVisible}

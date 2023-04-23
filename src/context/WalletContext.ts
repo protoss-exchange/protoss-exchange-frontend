@@ -8,6 +8,7 @@ interface WalletContextType {
   setValidNetwork: (v: boolean) => void;
   allPairs: PairInfo[];
   setAllPairs: (v: PairInfo[]) => void;
+  initialFetching: boolean;
 }
 export const WalletContext = createContext<WalletContextType>({
   wallet: null,
@@ -16,4 +17,5 @@ export const WalletContext = createContext<WalletContextType>({
   setValidNetwork: () => {},
   allPairs: [],
   setAllPairs: () => {},
+  initialFetching: false,
 });

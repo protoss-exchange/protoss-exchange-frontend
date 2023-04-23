@@ -13,10 +13,16 @@ function App() {
   const [wallet, setWallet] = useState<StarknetWindowObject | null>(null);
   const [validNetwork, setValidNetwork] = useState(false);
   const [allPairs, setAllPairs] = useState<PairInfo[]>([]);
+  const [initialFetching, setInitialFetching] = useState(false);
   useEffect(() => {
-    getAllPoolPairs().then((ret) => {
-      setAllPairs(ret);
-    });
+    setInitialFetching(true);
+    getAllPoolPairs()
+      .then((ret) => {
+        setAllPairs(ret);
+      })
+      .finally(() => {
+        setInitialFetching(false);
+      });
   }, []);
   return (
     <Router>
@@ -28,6 +34,7 @@ function App() {
           setValidNetwork,
           allPairs,
           setAllPairs,
+          initialFetching,
         }}
       >
         <Switch>
