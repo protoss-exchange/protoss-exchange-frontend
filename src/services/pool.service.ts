@@ -9,10 +9,14 @@ import { getChain } from "utils";
 import { StarknetWindowObject } from "get-starknet";
 import { Token } from "protoss-exchange-sdk";
 import tokens from "enums/tokens";
-import { POOL_API, ROUTER_ADDRESSES } from "enums/address";
+import {
+  POOL_API,
+  ROUTER_ADDRESSES,
+  ROUTER_ADDRESSES_DECIMAL,
+} from "enums/address";
 import axios from "axios";
 import bigDecimal from "js-big-decimal";
-import { DECIMAL, ROUTER_ADDRESS, ROUTER_ADDRESS_DECIMAL } from "../enums";
+import { DECIMAL } from "../enums";
 export interface PairInfo {
   // name: string,
   address: string;
@@ -192,16 +196,16 @@ export const addLiquidity = async (
     {
       entrypoint: "approve",
       contractAddress: tokenA.address,
-      calldata: [ROUTER_ADDRESS, 9999999999, 10],
+      calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
     },
     {
       entrypoint: "approve",
       contractAddress: tokenB.address,
-      calldata: [ROUTER_ADDRESS, 9999999999, 10],
+      calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
     },
     {
       entrypoint: "addLiquidity",
-      contractAddress: ROUTER_ADDRESS_DECIMAL,
+      contractAddress: ROUTER_ADDRESSES_DECIMAL[getChain()],
       calldata: [
         tokenA.address,
         tokenB.address,
@@ -270,11 +274,15 @@ export const removeLiquidity = (
     {
       entrypoint: "approve",
       contractAddress: pairAddress,
-      calldata: [ROUTER_ADDRESS, amountApprove.low, amountApprove.high],
+      calldata: [
+        ROUTER_ADDRESSES[getChain()],
+        amountApprove.low,
+        amountApprove.high,
+      ],
     },
     {
       entrypoint: "removeLiquidity",
-      contractAddress: ROUTER_ADDRESS_DECIMAL,
+      contractAddress: ROUTER_ADDRESSES_DECIMAL[getChain()],
       calldata: [
         tokenA.address,
         tokenB.address,
