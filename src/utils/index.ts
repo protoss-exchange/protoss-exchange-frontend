@@ -18,6 +18,13 @@ export function getChain() {
   return ChainId.TESTNET;
 }
 
+export function getNetwork() {
+  if (!CHAIN_ID) return "goerli-alpha";
+  if (CHAIN_ID === "MAINNET") "mainnet-alpha";
+  if (CHAIN_ID === "TESTNET") "goerli-alpha";
+  return "goerli-alpha";
+}
+
 export function confirmNetwork(wallet: StarknetWindowObject) {
   let chainId;
   if (wallet.id.includes("argent")) {

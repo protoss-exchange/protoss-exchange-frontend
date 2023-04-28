@@ -1,30 +1,16 @@
-import {
-  ChainId,
-  JSBI,
-  Pair,
-  Percent,
-  Token,
-  TokenAmount,
-  Trade,
-} from "protoss-exchange-sdk";
+import { Pair, Token, TokenAmount, Trade } from "protoss-exchange-sdk";
 import bigDecimal from "js-big-decimal";
 import ProtossSwapPairABI from "abi/protoss_pair_abi.json";
 import ProtossERC20ABI from "abi/protoss_erc20_abi.json";
 import ProtossRouterABI from "abi/protoss_router_abi.json";
 import { Contract, Abi } from "starknet";
 import { defaultProvider } from "../constants";
-import { IResponse } from "enums/types";
-import {
-  DECIMAL,
-  ROUTER_ADDRESS,
-  ROUTER_ADDRESS_DECIMAL,
-  SERVER_URLS,
-} from "enums";
-import axios from "axios";
-import { getToken } from "../utils";
+import { DECIMAL } from "enums";
+import { getChain } from "../utils";
 import { bnToUint256 } from "starknet/utils/uint256";
 import { StarknetWindowObject } from "get-starknet";
 import { PairInfo } from "./pool.service";
+import { ROUTER_ADDRESSES, ROUTER_ADDRESSES_DECIMAL } from "../enums/address";
 
 export interface AllPairItem {
   token0: {
@@ -115,46 +101,6 @@ export const tradeExactIn = async (
       );
 };
 
-export async function getAllPairs(chainId: ChainId) {
-  try {
-    const res = await axios.get<IResponse<AllPairItem[]>>(
-      `${SERVER_URLS[chainId]}/pool/pairs`
-    );
-    if (res.data.errCode === 0) {
-      const data = res.data.data;
-      // console.log(data);
-      return data
-        .filter((item) => {
-          return !!(
-            getToken(chainId, item.token0.address) &&
-            getToken(chainId, item.token1.address)
-          );
-        })
-        .map((item) => {
-          const { reserve0, reserve1, totalSupply } = item;
-          const token0 = getToken(chainId, item.token0.address) as Token;
-          const token1 = getToken(chainId, item.token1.address) as Token;
-          const pair = new Pair(
-            new TokenAmount(token0, reserve0),
-            new TokenAmount(token1, reserve1)
-          );
-
-          return {
-            ...item,
-            token0,
-            token1,
-            pair,
-            totalSupply: new TokenAmount(pair.liquidityToken, totalSupply),
-          };
-        });
-    }
-
-    throw new Error("fetch pairs fail");
-  } catch (error: any) {
-    throw new Error(error);
-  }
-}
-
 export const onSwapToken = async (
   wallet: StarknetWindowObject | null,
   amountIn: string | number,
@@ -183,7 +129,7 @@ export const onSwapToken = async (
   );
   const ret = await contract.call("allowance", [
     wallet.account?.address,
-    ROUTER_ADDRESS,
+    ROUTER_ADDRESSES[getChain()],
   ]);
   if (minimumOut && minimumOut > amountOutMinNum) return;
   const uint256MinimunOut = bnToUint256(
@@ -195,11 +141,11 @@ export const onSwapToken = async (
         entrypoint: "approve",
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         contractAddress: fromCurrency.address,
-        calldata: [ROUTER_ADDRESS, 10000, 10],
+        calldata: [ROUTER_ADDRESSES[getChain()], 10000, 10],
       },
       {
         entrypoint: "swapExactTokensForTokens",
-        contractAddress: ROUTER_ADDRESS_DECIMAL,
+        contractAddress: ROUTER_ADDRESSES_DECIMAL[getChain()],
         calldata: [
           uint256Input.low,
           uint256Input.high,

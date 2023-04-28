@@ -1,3 +1,4 @@
 import { Provider } from "starknet";
-
-export const defaultProvider = new Provider();
+import { getNetwork } from "../utils";
+//@ts-ignore
+export const defaultProvider = new Provider({ network: getNetwork() });
