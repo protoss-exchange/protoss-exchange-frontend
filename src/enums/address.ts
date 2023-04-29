@@ -36,4 +36,4 @@ export const STARKNET_ID_ADDRESSES: {
 };
 
 export const POOL_API =
-  "https://protoss-exchange-api-nrhq6ldrtq-an.a.run.app/pairs";
+  "https://protoss-exchange-api-nrhq6ldrtq-du.a.run.app/pairs";
