@@ -260,16 +260,6 @@ export const removeLiquidity = (
   const amountApprove = bnToUint256(
     bigDecimal.multiply(99999999999999, DECIMAL).toString()
   );
-  console.log(
-    amountIn,
-    bigDecimal
-      .multiply(Number(amountIn) * 0.99, Math.pow(10, tokenA.decimals))
-      .toString(),
-    amountOut,
-    bigDecimal
-      .multiply(Number(amountOut) * 0.99, Math.pow(10, tokenA.decimals))
-      .toString()
-  );
   wallet.account?.execute([
     {
       entrypoint: "approve",
