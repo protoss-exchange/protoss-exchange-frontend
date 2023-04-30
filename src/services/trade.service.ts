@@ -5,7 +5,6 @@ import ProtossERC20ABI from "abi/protoss_erc20_abi.json";
 import ProtossRouterABI from "abi/protoss_router_abi.json";
 import { Contract, Abi } from "starknet";
 import { defaultProvider } from "../constants";
-import { DECIMAL } from "enums";
 import { getChain, getNetwork } from "../utils";
 import { bnToUint256 } from "starknet/utils/uint256";
 import { StarknetWindowObject } from "get-starknet";
@@ -122,10 +121,28 @@ export const onSwapToken = async (
   const amountInNum = Number(amountIn);
   const amountOutMinNum = Number(amountOutMin);
   const uint256Input = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountInNum), DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(
+            Number(amountInNum),
+            Math.pow(10, fromCurrency.decimals)
+          )
+        )
+        .toString()
+    )
   );
   const uint256Output = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountOutMinNum), DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(
+            Number(amountOutMinNum),
+            Math.pow(10, toCurrency.decimals)
+          )
+        )
+        .toString()
+    )
   );
   let minimumOut;
   if (!wallet) return;
@@ -143,7 +160,13 @@ export const onSwapToken = async (
   ]);
   if (minimumOut && minimumOut > amountOutMinNum) return;
   const uint256MinimunOut = bnToUint256(
-    BigInt(bigDecimal.multiply(minimumOut, DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(minimumOut, Math.pow(10, toCurrency.decimals))
+        )
+        .toString()
+    )
   );
   const ret2 = await wallet.account?.execute(
     [

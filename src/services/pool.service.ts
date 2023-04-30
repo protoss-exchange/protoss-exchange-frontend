@@ -16,7 +16,6 @@ import {
 } from "enums/address";
 import axios from "axios";
 import bigDecimal from "js-big-decimal";
-import { DECIMAL } from "../enums";
 export interface PairInfo {
   // name: string,
   address: string;
@@ -180,17 +179,48 @@ export const addLiquidity = async (
   wallet: StarknetWindowObject
 ) => {
   const uint256Input = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountIn), DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(Number(amountIn), Math.pow(10, tokenA.decimals))
+        )
+        .toString()
+    )
   );
   const uint256Output = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountOut), DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(Number(amountOut), Math.pow(10, tokenB.decimals))
+        )
+        .toString()
+    )
   );
-  // TODO: Fix slippage to 0.1%
+  // TODO: Fix slippage to 1%
   const uint256AmountInMin = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountIn) * 0.999, DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(
+            Number(amountIn) * 0.1,
+            Math.pow(10, tokenA.decimals)
+          )
+        )
+        .toString()
+    )
   );
+
   const uint256AmountOutMin = bnToUint256(
-    BigInt(bigDecimal.multiply(Number(amountOut) * 0.999, DECIMAL).toString())
+    BigInt(
+      bigDecimal
+        .round(
+          bigDecimal.multiply(
+            Number(amountOut) * 0.1,
+            Math.pow(10, tokenB.decimals)
+          )
+        )
+        .toString()
+    )
   );
   wallet.account?.execute([
     {
@@ -232,17 +262,20 @@ export const removeLiquidity = (
   amountIn: string | number,
   amountOut: string | number,
   wallet: StarknetWindowObject,
-  withdrawSlippage: number
+  withdrawSlippage: number,
+  decimals = 18
 ) => {
   const uint256Liquidity = bnToUint256(
-    bigDecimal.multiply(liquidity, DECIMAL).toString()
+    bigDecimal.multiply(liquidity, Math.pow(10, decimals)).toString()
   );
   const uint256AmountInMin = bnToUint256(
     BigInt(
       bigDecimal
-        .multiply(
-          Number(amountIn) * (1 - withdrawSlippage / 100),
-          Math.pow(10, tokenA.decimals)
+        .round(
+          bigDecimal.multiply(
+            Number(amountIn) * (1 - withdrawSlippage / 100),
+            Math.pow(10, tokenA.decimals)
+          )
         )
         .toString()
     )
@@ -250,15 +283,17 @@ export const removeLiquidity = (
   const uint256AmountOutMin = bnToUint256(
     BigInt(
       bigDecimal
-        .multiply(
-          Number(amountOut) * (1 - withdrawSlippage / 100),
-          Math.pow(10, tokenB.decimals)
+        .round(
+          bigDecimal.multiply(
+            Number(amountOut) * (1 - withdrawSlippage / 100),
+            Math.pow(10, tokenB.decimals)
+          )
         )
         .toString()
     )
   );
   const amountApprove = bnToUint256(
-    bigDecimal.multiply(99999999999999, DECIMAL).toString()
+    bigDecimal.multiply(99999999999999, Math.pow(10, 18)).toString()
   );
   wallet.account?.execute([
     {

@@ -54,7 +54,11 @@ const TokenInput: FC<ITokenInputProps> = ({
         <div className={styles.fromCurrencySelectContainer}>
           <Select value={fromCurrency} onSelect={setFromCurrency}>
             {tokens[getChain()].map((item) => (
-              <Option key={item.symbol} value={item.symbol}>
+              <Option
+                key={item.symbol}
+                value={item.symbol}
+                disabled={item.symbol === toCurrency}
+              >
                 {item.name}
               </Option>
             ))}
@@ -107,7 +111,11 @@ const TokenInput: FC<ITokenInputProps> = ({
           placeholder={"Select"}
         >
           {tokens[getChain()].map((item) => (
-            <Option key={item.symbol} value={item.symbol}>
+            <Option
+              key={item.symbol}
+              value={item.symbol}
+              disabled={item.symbol === fromCurrency}
+            >
               {item.name}
             </Option>
           ))}

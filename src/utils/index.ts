@@ -75,3 +75,17 @@ export function getPairAddress(
     )[0].address ?? ""
   );
 }
+
+export function getPairDecimals(
+  allPairs: PairInfo[],
+  token0: Token,
+  token1: Token
+) {
+  return (
+    allPairs.find(
+      (item) =>
+        item.token0?.address === token0.address &&
+        item.token1?.address === token1.address
+    )?.decimals ?? 18
+  );
+}

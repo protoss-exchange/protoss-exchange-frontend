@@ -18,5 +18,3 @@ export enum TransactionHashPrefix {
   INVOKE = "0x696e766f6b65", // encodeShortString('invoke'),
   L1_HANDLER = "0x6c315f68616e646c6572", // encodeShortString('l1_handler'),
 }
-
-export const DECIMAL = 1000000000000000000;
