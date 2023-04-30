@@ -4,6 +4,7 @@ import { defaultProvider } from "../constants";
 import { JSBI } from "protoss-exchange-sdk";
 import { uint256ToBN } from "starknet/utils/uint256";
 import { StarknetWindowObject } from "get-starknet";
+import bigDecimal from "js-big-decimal";
 
 export const getBalance = async (
   wallet: StarknetWindowObject,
@@ -19,5 +20,6 @@ export const getBalance = async (
     wallet?.account?.address.toLocaleLowerCase(),
   ]);
   const bigInt = JSBI.BigInt(uint256ToBN(ret[0]));
-  return JSBI.divide(bigInt, JSBI.BigInt("1000000000000000000")).toString();
+  const balance = JSBI.divide(bigInt, JSBI.BigInt("1")).toString();
+  return bigDecimal.divide(balance, Math.pow(10, 18), 6)
 };
