@@ -41,7 +41,7 @@ const Swap = () => {
       setOutAmount(Number(ret) || 0);
     });
     if (wallet && validNetwork) {
-      const inputBalance = await getBalance(wallet, inputToken.address);
+      const inputBalance = await getBalance(wallet, inputToken);
       if (Number(inputBalance) < Number(inputValue)) {
         setInsufficient(true);
       } else setInsufficient(false);
