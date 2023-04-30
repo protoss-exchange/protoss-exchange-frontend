@@ -20,8 +20,8 @@ export function getChain() {
 
 export function getNetwork() {
   if (!CHAIN_ID) return "goerli-alpha";
-  if (CHAIN_ID === "MAINNET") "mainnet-alpha";
-  if (CHAIN_ID === "TESTNET") "goerli-alpha";
+  if (CHAIN_ID === "MAINNET") return "mainnet-alpha";
+  if (CHAIN_ID === "TESTNET") return "goerli-alpha";
   return "goerli-alpha";
 }
 
