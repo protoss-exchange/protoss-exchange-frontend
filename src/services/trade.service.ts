@@ -100,16 +100,6 @@ export const tradeExactIn = async (
     Math.pow(10, currencyB.decimals),
     currencyB.decimals
   );
-  console.log(
-    bigDecimal.multiply(
-      bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),
-      currencyAAmount.toFixed(currencyB.decimals)
-    ),
-    bigDecimal.multiply(
-      bigDecimal.divide(reserve1WithDecimal, reserve0WithDecimal, 6),
-      currencyAAmount.toFixed(currencyA.decimals)
-    )
-  );
   return swapToken
     ? bigDecimal.multiply(
         bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),

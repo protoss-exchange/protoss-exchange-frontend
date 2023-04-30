@@ -14,6 +14,8 @@ import { MyPoolItem } from "./MyPoolItem";
 import { useUpdateReserves } from "hooks/useUpdateReserves";
 import Slippage from "../../components/Slippage";
 import { LoadingOutlined } from "@ant-design/icons";
+import tokens from "enums/tokens";
+import {getChain} from "utils";
 const Pool = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,9 +52,17 @@ const Pool = () => {
 
   useEffect(() => {
     if (reserve1 && reserve0) {
+      const token0 = tokens[getChain()].filter(
+        (item) => item.symbol === fromCurrency
+      )[0];
+      const token1 = tokens[getChain()].filter(
+        (item) => item.symbol === toCurrency
+      )[0];
+      const reserve0WithDecimal = bigDecimal.divide(reserve0.toString(), Math.pow(10, token0.decimals), token0.decimals)
+      const reserve1WithDecimal = bigDecimal.divide(reserve1.toString(), Math.pow(10, token1.decimals), token1.decimals)
       const rate = bigDecimal.divide(
-        reserve1.toString(),
-        reserve0.toString(),
+        reserve1WithDecimal,
+        reserve0WithDecimal,
         6
       );
       setExchangeRate(rate);
