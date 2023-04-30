@@ -6,7 +6,7 @@ import ProtossRouterABI from "abi/protoss_router_abi.json";
 import { Contract, Abi } from "starknet";
 import { defaultProvider } from "../constants";
 import { DECIMAL } from "enums";
-import { getChain } from "../utils";
+import { getChain, getNetwork } from "../utils";
 import { bnToUint256 } from "starknet/utils/uint256";
 import { StarknetWindowObject } from "get-starknet";
 import { PairInfo } from "./pool.service";
@@ -90,13 +90,33 @@ export const tradeExactIn = async (
   //   maxHops: 3,
   //   maxNumResults: 1,
   // })[0];
+  const reserve0WithDecimal = bigDecimal.divide(
+    reserve0.toString(),
+    Math.pow(10, currencyA.decimals),
+    currencyA.decimals
+  );
+  const reserve1WithDecimal = bigDecimal.divide(
+    reserve1.toString(),
+    Math.pow(10, currencyB.decimals),
+    currencyB.decimals
+  );
+  console.log(
+    bigDecimal.multiply(
+      bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),
+      currencyAAmount.toFixed(currencyB.decimals)
+    ),
+    bigDecimal.multiply(
+      bigDecimal.divide(reserve1WithDecimal, reserve0WithDecimal, 6),
+      currencyAAmount.toFixed(currencyA.decimals)
+    )
+  );
   return swapToken
     ? bigDecimal.multiply(
-        bigDecimal.divide(reserve0.toString(), reserve1.toString(), 6),
+        bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),
         currencyAAmount.toFixed(currencyB.decimals)
       )
     : bigDecimal.multiply(
-        bigDecimal.divide(reserve1.toString(), reserve0.toString(), 6),
+        bigDecimal.divide(reserve1WithDecimal, reserve0WithDecimal, 6),
         currencyAAmount.toFixed(currencyA.decimals)
       );
 };

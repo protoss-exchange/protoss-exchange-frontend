@@ -86,6 +86,17 @@ const Pool = () => {
       title: "Liquidity",
       width: 200,
       align: "center",
+      render: (_, record: PairInfo) => {
+        return (
+          <span>
+            {bigDecimal.divide(
+              record.liquidity,
+              Math.pow(10, record.decimals),
+              2
+            )}
+          </span>
+        );
+      },
     },
     {
       key: "add",
