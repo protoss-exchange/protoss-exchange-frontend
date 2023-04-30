@@ -2,12 +2,12 @@ import { Abi, Contract } from "starknet";
 import protossPairAbi from "abi/protoss_pair_abi.json";
 import protossRouterAbi from "abi/protoss_router_abi.json";
 import { defaultProvider } from "../constants";
-import { bnToUint256, Uint256 } from "starknet/utils/uint256";
+import { bnToUint256, Uint256, uint256ToBN } from "starknet/utils/uint256";
 import { hexToDecimalString, toHex } from "starknet/utils/number";
 import { uint256ToReadable } from "utils/maths";
 import { getChain } from "utils";
 import { StarknetWindowObject } from "get-starknet";
-import { Token } from "protoss-exchange-sdk";
+import { JSBI, Token } from "protoss-exchange-sdk";
 import tokens from "enums/tokens";
 import {
   POOL_API,
@@ -133,9 +133,14 @@ export const getPairBalances = async (
     const balances = await pairContract.call("balanceOf", [
       wallet.account?.address,
     ]);
-    const myBalances = uint256ToReadable(balances[0]);
-    if (myBalances !== "0")
-      ret.push({ ...pair, balances: uint256ToReadable(balances[0]) });
+    const bigInt = JSBI.BigInt(uint256ToBN(balances[0]));
+    const balance = JSBI.divide(bigInt, JSBI.BigInt("1")).toString();
+    const myBalances = bigDecimal.divide(
+      balance,
+      Math.pow(10, pair.decimals),
+      pair.decimals
+    );
+    if (myBalances !== "0") ret.push({ ...pair, balances: myBalances });
   }
   return ret;
 };
