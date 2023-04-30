@@ -271,7 +271,9 @@ export const removeLiquidity = (
   decimals = 18
 ) => {
   const uint256Liquidity = bnToUint256(
-    bigDecimal.multiply(liquidity, Math.pow(10, decimals)).toString()
+    bigDecimal
+      .round(bigDecimal.multiply(liquidity, Math.pow(10, decimals)))
+      .toString()
   );
   const uint256AmountInMin = bnToUint256(
     BigInt(
