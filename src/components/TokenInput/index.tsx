@@ -34,8 +34,7 @@ const TokenInput: FC<ITokenInputProps> = ({
     if (wallet) {
       getBalance(
         wallet,
-        tokens[getChain()].filter((item) => item.symbol === fromCurrency)[0]
-          .address
+        tokens[getChain()].find((item) => item.symbol === fromCurrency)
       ).then((ret) => {
         // console.log(ret);
         setBalance(Number(ret) || 0);
