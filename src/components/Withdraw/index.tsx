@@ -6,7 +6,7 @@ import { Slider } from "antd";
 import bigDecimal from "js-big-decimal";
 import { removeLiquidity } from "services/pool.service";
 import tokens from "enums/tokens";
-import { getChain } from "utils";
+import { getChain, getPairDecimals } from "utils";
 import { WalletContext } from "context/WalletContext";
 import { getPairAddress } from "utils";
 
@@ -77,7 +77,8 @@ const Withdraw: FC<IWithdraw> = (props) => {
       token0Withdrawn,
       token1Withdrawn,
       wallet,
-      withdrawSlippage
+      withdrawSlippage,
+      getPairDecimals(allPairs, token0, token1)
     );
   };
   return (
