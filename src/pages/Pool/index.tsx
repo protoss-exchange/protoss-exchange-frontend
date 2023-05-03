@@ -21,7 +21,7 @@ const Pool = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showAllPools, setShowAllPools] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [outAmount, setOutAmount] = useState(0);
+  const [outAmount, setOutAmount] = useState(12);
   const [myPools, setMyPools] = useState<PairInfo[]>([]);
   const [exchangeRate, setExchangeRate] = useState("0");
   const [withdrawSlippage, setWithdrawSlippage] = useState(1);
@@ -52,6 +52,7 @@ const Pool = () => {
 
   useEffect(() => {
     if (reserve1 && reserve0) {
+     
       const token0 = tokens[getChain()].filter(
         (item) => item.symbol === fromCurrency
       )[0];
@@ -77,6 +78,7 @@ const Pool = () => {
       setOutAmount(Number(bigDecimal.multiply(inputValue, rate)));
     }
   }, [inputValue, reserve0, reserve1]);
+
 
   const onLiquidityModalCancel = () => {
     setModalVisible(false);

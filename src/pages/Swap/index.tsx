@@ -10,6 +10,7 @@ import styles from "./index.module.css";
 import { TokenInput } from "components";
 import { SettingOutlined } from "@ant-design/icons";
 import Slippage from "../../components/Slippage";
+import bigDecimal from "js-big-decimal";
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState(
@@ -24,6 +25,8 @@ const Swap = () => {
   const [inputInvalid, setInputInvalid] = useState(false);
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
+
+
   const onSwap = async () => {
     if (!fromCurrency || !toCurrency) return;
     setIsFetching(true);
@@ -63,6 +66,37 @@ const Swap = () => {
     setInputInvalid(false);
     onSwap();
   }, [fromCurrency, toCurrency, inputValue]);
+
+
+  useEffect(() => {
+    if (inputValue) {
+      const reserve0 = allPairs[0]['reserve0']
+      const reserve1 = allPairs[0]['reserve1']
+      const token0 = tokens[getChain()].filter(
+        (item) => item.symbol === fromCurrency
+      )[0];
+      const token1 = tokens[getChain()].filter(
+        (item) => item.symbol === toCurrency
+      )[0];
+      const reserve0WithDecimal = bigDecimal.divide(
+        reserve0.toString(),
+        Math.pow(10, token0.decimals),
+        token0.decimals
+      );
+      const reserve1WithDecimal = bigDecimal.divide(
+        reserve1.toString(),
+        Math.pow(10, token1.decimals),
+        token1.decimals
+      );
+      const rate = bigDecimal.divide(
+        reserve1WithDecimal,
+        reserve0WithDecimal,
+        6
+      );
+      setOutAmount(Number(bigDecimal.multiply(inputValue, rate)));
+    }
+  }, [inputValue]);
+
   const generateBtnText = () => {
     if (!wallet?.isConnected) return "Connect Wallet";
     if (!validNetwork) return "Invalid Network";

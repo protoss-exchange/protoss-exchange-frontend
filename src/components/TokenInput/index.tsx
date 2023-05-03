@@ -26,21 +26,35 @@ const TokenInput: FC<ITokenInputProps> = ({
   setToCurrency,
   toCurrency,
   outAmount,
-  swapNumber,
+  swapNumber
 }) => {
   const { wallet, validNetwork } = useContext(WalletContext);
   const [balance, setBalance] = useState(0);
+  const [toBalance, setToBalance] = useState(0);
   useEffect(() => {
     if (wallet) {
       getBalance(
         wallet,
         tokens[getChain()].find((item) => item.symbol === fromCurrency)
       ).then((ret) => {
-        // console.log(ret);
         setBalance(Number(ret) || 0);
       });
     }
   }, [wallet, fromCurrency]);
+
+
+  useEffect(() => {
+    if (wallet) {
+      getBalance(
+        wallet,
+        tokens[getChain()].find((item) => item.symbol === toCurrency)
+      ).then((ret) => {
+        setToBalance(Number(ret) || 0);
+      });
+    }
+  }, [wallet, toCurrency]);
+
+
   return (
     <>
       <div className={styles.fromCurrency}>
@@ -105,6 +119,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           value={outAmount.toFixed(6)}
           style={{ width: 280, backgroundColor: "transparent", color: "#fff" }}
         />
+         <div className={styles.fromCurrencySelectContainer}>
         <Select
           value={toCurrency}
           onSelect={setToCurrency}
@@ -120,6 +135,21 @@ const TokenInput: FC<ITokenInputProps> = ({
             </Option>
           ))}
         </Select>
+          <div className={styles.balanceBox}>
+            {!wallet ? (
+              <span className={styles.balance}>Connect your wallet</span>
+            ) : validNetwork ? (
+                <Text className={styles.balance} ellipsis={true}>
+                  Balance:{" "}
+                  <Tooltip placement={"bottomLeft"} title={toBalance}>
+                    {toBalance}
+                  </Tooltip>
+                </Text>
+            ) : (
+              <span className={styles.balance}>Switch the network</span>
+            )}
+          </div>
+          </div>
       </div>
     </>
   );
