@@ -21,7 +21,7 @@ const Pool = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showAllPools, setShowAllPools] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [outAmount, setOutAmount] = useState(12);
+  const [outAmount, setOutAmount] = useState("");
   const [myPools, setMyPools] = useState<PairInfo[]>([]);
   const [exchangeRate, setExchangeRate] = useState("0");
   const [withdrawSlippage, setWithdrawSlippage] = useState(1);
@@ -75,7 +75,7 @@ const Pool = () => {
         6
       );
       setExchangeRate(rate);
-      setOutAmount(Number(bigDecimal.multiply(inputValue, rate)));
+      setOutAmount(bigDecimal.multiply(inputValue, rate));
     }
   }, [inputValue, reserve0, reserve1]);
 
@@ -172,6 +172,11 @@ const Pool = () => {
       />
     ));
   };
+
+  const changeOutAmount = (v:string) => {
+    setOutAmount(v);
+  }
+
   return (
     <div>
       <div className={styles.header}>Pools Overview</div>
@@ -210,6 +215,7 @@ const Pool = () => {
         toCurrency={toCurrency}
         setToCurrency={setToCurrency}
         outAmount={outAmount}
+        changeOutAmount={changeOutAmount}
       />
     </div>
   );

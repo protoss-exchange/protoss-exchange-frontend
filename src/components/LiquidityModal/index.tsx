@@ -25,6 +25,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   setToCurrency,
   toCurrency,
   outAmount,
+  changeOutAmount,
   reserve0,
   reserve1,
   swapNumber,
@@ -71,6 +72,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
         toCurrency={toCurrency}
         setToCurrency={setToCurrency}
         outAmount={outAmount}
+        changeOutAmount={changeOutAmount}
         swapNumber={swapNumber}
       />
       <Button

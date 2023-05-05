@@ -13,7 +13,8 @@ export interface ITokenInputProps {
   setFromCurrency: (v: string) => void;
   toCurrency: string | undefined;
   setToCurrency: (v: string) => void;
-  outAmount: number;
+  outAmount: string;
+  changeOutAmount: (v: string) => void;
   swapNumber?: () => void;
 }
 const { Option } = Select;
@@ -26,6 +27,7 @@ const TokenInput: FC<ITokenInputProps> = ({
   setToCurrency,
   toCurrency,
   outAmount,
+  changeOutAmount,
   swapNumber
 }) => {
   const { wallet, validNetwork } = useContext(WalletContext);
@@ -63,7 +65,9 @@ const TokenInput: FC<ITokenInputProps> = ({
           placeholder="0.0"
           style={{ width: 280 }}
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value)
+          }}
         />
         <div className={styles.fromCurrencySelectContainer}>
           <Select value={fromCurrency} onSelect={setFromCurrency}>
@@ -116,7 +120,10 @@ const TokenInput: FC<ITokenInputProps> = ({
         <span className={styles.indicator}>TO</span>
         <Input
           placeholder="0.0"
-          value={outAmount.toFixed(6)}
+          value={outAmount}
+          onChange={(e) => {
+            changeOutAmount(e.target.value)
+          }}
           style={{ width: 280, backgroundColor: "transparent", color: "#fff" }}
         />
          <div className={styles.fromCurrencySelectContainer}>
