@@ -8,6 +8,7 @@ import { uint256ToReadable } from "utils/maths";
 import { getChain } from "utils";
 import { StarknetWindowObject } from "get-starknet";
 import { JSBI, Token } from "protoss-exchange-sdk";
+const { REACT_APP_CHAIN_ID: CHAIN_ID } = process.env;
 import tokens from "enums/tokens";
 import {
   POOL_API,
@@ -69,12 +70,12 @@ export const getAllPoolPairs = async (): Promise<PairInfo[]> => {
   //     const token0Decimal = await token0Contract.call('decimals');
   //     const token1Decimal = await token1Contract.call('decimals');
   //     console.log('token0Decimal:', token0Decimal.toString(), "token1Decimal", token1Decimal.toString())
-  //
+  
   //     // calculate liquidity
   //   const token0Amount = JSBI.divide(JSBI.BigInt(reserve0.toString()), JSBI.BigInt(token0Decimal.toString()))
   //   const token1Amount = JSBI.divide(JSBI.BigInt(reserve1.toString()), JSBI.BigInt(token1Decimal.toString()))
   //   console.log('token0Amount:', token0Amount, "token1Amount:", token1Amount);
-  //
+  
   //   pairInfo = {
   //       name: decimalStringToAscii(pairName.toString()),
   //       address: pairAddress,
@@ -90,10 +91,23 @@ export const getAllPoolPairs = async (): Promise<PairInfo[]> => {
   //     await sleep(10000)
   // }
   // return ret;
-  const pairs = await axios.get(POOL_API);
-  if (pairs.status === 200) {
+
+  if ("TESTNET" == CHAIN_ID) {
+    const data = [
+      {"token0":{"address":"0x58e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb","name":"Token A","symbol":"TOA","decimals":18},
+      "token1":{"address":"0x401d06bd0e3e0d2cca6eead7bb20ec5d6ad4f48a27b2ce00e416f89cbd5d011","name":"Token B","symbol":"TOB","decimals":18},
+      "pairAddress":"0xc40b1cf2b8be08565b4b20f0a7f060531f7c1c46d3876937629e98022ce966","reserve0":"0x5e8d85b2b255dc65120","reserve1":"0x14e27e32161fe1e1eccf","liquidity":311148348000000000000,"lastUpdatedTime":"2023-05-05T04:00:02.318Z","decimals":18,"totalSupply":"0xb19c11b97099168c91e"},
+      
+      {"token0":{"address":"0x6f5a85cfdadca8a90f7b99c99afd992a149e853a641257db99cf50bc2093ed7","name":"Token C","symbol":"TOC","decimals":18},
+      "token1":{"address":"0x58e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb","name":"Token A","symbol":"TOA","decimals":18},
+      "pairAddress":"0xd5f365b66330e0c967fecb4ec394f4a6f6dd1f30c4ccbca0725ac8ed0c8572","reserve0":"0x15335fc1cba26527f88e","reserve1":"0x153490ae16e8ed73f790","liquidity":1894965000000000000,"lastUpdatedTime":"2023-05-05T04:00:02.536Z","decimals":18,"totalSupply":"0x1533f7fb2bdd00e45b5c"},
+      
+      {"token0":{"address":"0x58e4cf84d5c9d7c6e5f3fdd4d2d7186566f39fa67bdd1f24f91c41b4c095fcb","name":"Token A","symbol":"TOA","decimals":18},
+      "token1":{"address":"0x55ce6e2c9f7e962ceddce755ac5dbed6415d206d5435631557d1d75c44d3149","name":"Token D","symbol":"TOD","decimals":18},
+      "pairAddress":"0x4f385ee33e9f43ed2e3504bf9deb72dc73a6865769e3234b82e1ac8cf1b52cf","reserve0":"0xa968163f0a57b400000","reserve1":"0xa9665ad3dced1eed86b","liquidity":3818580000000000000,"lastUpdatedTime":"2023-05-05T04:00:02.552Z","decimals":18,"totalSupply":"0xa96738339f1d3dc0000"}]
+      
     let ret = [];
-    for (const item of pairs.data.data ?? []) {
+    for (const item of data ?? []) {
       const token0Address = item.token0.address.substring(2);
       const token1Address = item.token1.address.substring(2);
       ret.push({
@@ -115,8 +129,35 @@ export const getAllPoolPairs = async (): Promise<PairInfo[]> => {
       } as PairInfo);
     }
     return ret;
+  }else {
+    const pairs = await axios.get(POOL_API);
+    if (pairs.status === 200) {
+      let ret = [];
+      for (const item of pairs.data.data ?? []) {
+        const token0Address = item.token0.address.substring(2);
+        const token1Address = item.token1.address.substring(2);
+        ret.push({
+          address: item.pairAddress,
+          decimals: item.decimals,
+          lastUpdatedTime: item.lastUpdatedTime,
+          liquidity: item.liquidity,
+          reserve0: hexToDecimalString(item.reserve0),
+          reserve1: hexToDecimalString(item.reserve1),
+          token0:
+            tokens[getChain()].filter((item) =>
+              item.address.toLowerCase().includes(token0Address)
+            )[0] ?? undefined,
+          token1:
+            tokens[getChain()].filter((item) =>
+              item.address.toLowerCase().includes(token1Address)
+            )[0] ?? undefined,
+          totalSupply: item.totalSupply,
+        } as PairInfo);
+      }
+      return ret;
+    }
+    return [];
   }
-  return [];
 };
 
 export const getPairBalances = async (

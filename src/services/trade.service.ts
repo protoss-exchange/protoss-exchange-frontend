@@ -102,11 +102,11 @@ export const tradeExactIn = async (
   return swapToken
     ? bigDecimal.multiply(
         bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),
-        currencyAAmount.toFixed(currencyB.decimals)
+        currencyAAmount.toFixed(12) //currencyB.decimals
       )
     : bigDecimal.multiply(
         bigDecimal.divide(reserve1WithDecimal, reserve0WithDecimal, 6),
-        currencyAAmount.toFixed(currencyA.decimals)
+        currencyAAmount.toFixed(12)  //currencyA.decimals
       );
 };
 

@@ -1,7 +1,6 @@
 import { onSwapToken, tradeExactIn } from "services/trade.service";
 import { tokens } from "enums/tokens";
-import { getChain } from "utils";
-import { MINIMUN_VALUE } from "enums";
+import { getChain, isAmountZero } from "utils";
 import { tryParseAmount } from "utils/maths";
 import { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -12,6 +11,7 @@ import { TokenInput } from "components";
 import { SettingOutlined } from "@ant-design/icons";
 import Slippage from "../../components/Slippage";
 import bigDecimal from "js-big-decimal";
+import { Token } from "protoss-exchange-sdk";
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState(
@@ -20,8 +20,6 @@ const Swap = () => {
   const [toCurrency, setToCurrency] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [outAmount, setOutAmount] = useState("");
-  const [isInputChange, setIsInputChange] = useState(false);
-  const [isOutputChange, setOutputChange] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [slippage, setSlippage] = useState(1);
   const [slippageAdjustVisible, setSlippageAdjustVisible] = useState(false);
@@ -29,34 +27,59 @@ const Swap = () => {
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
 
-
-  const onSwap = async () => {
-    if (!fromCurrency || !toCurrency) return;
-    setIsFetching(true);
-    const inputToken = tokens[getChain()].filter(
-      (item) => item.symbol === fromCurrency
-    )[0];
-    const outputToken = tokens[getChain()].filter(
-      (item) => item.symbol === toCurrency
-    )[0];
-    tradeExactIn(
-      tryParseAmount(inputValue, inputToken),
-      allPairs,
-      outputToken
-    ).then((ret) => {
-      if (ret) setOutAmount(ret);
-    });
-    
+  const checkBalance = async(inputToken: Token) => {
     if (wallet && validNetwork) {
       const inputBalance = await getBalance(wallet, inputToken);
       if (Number(inputBalance) < Number(inputValue)) {
         setInsufficient(true);
       } else setInsufficient(false);
     }
-    setIsFetching(false);
+  }
+
+  const onSwap = async () => {
+    if (!fromCurrency || !toCurrency) return;
+    setIsFetching(true);
+
+    if (!inputValue && !isAmountZero(outAmount)) {
+      const inputToken = tokens[getChain()].filter(
+        (item) => item.symbol === fromCurrency
+      )[0];
+      const outputToken = tokens[getChain()].filter(
+        (item) => item.symbol === toCurrency
+      )[0];
+      tradeExactIn(
+        tryParseAmount(outAmount, outputToken),
+        allPairs,
+        inputToken
+      ).then((ret) => {
+        setIsFetching(false);
+        if (ret) setInputValue(ret);
+      }).catch((err) => {
+        setIsFetching(false);
+      });
+      checkBalance(inputToken);
+    }else {
+      const inputToken = tokens[getChain()].filter(
+        (item) => item.symbol === fromCurrency
+      )[0];
+      const outputToken = tokens[getChain()].filter(
+        (item) => item.symbol === toCurrency
+      )[0];
+      tradeExactIn(
+        tryParseAmount(inputValue, inputToken),
+        allPairs,
+        outputToken
+      ).then((ret) => {
+        setIsFetching(false);
+        if (ret) setOutAmount(ret);
+      }).catch((err) => {
+        setIsFetching(false);
+      });
+      checkBalance(inputToken);
+    }
+    
   };
   const swapNumber = () => {
-    //if (!fromCurrency) return;
     setInputValue(outAmount);
     const tmp = fromCurrency?fromCurrency:"";
     setFromCurrency(toCurrency);
@@ -70,69 +93,7 @@ const Swap = () => {
     }
     setInputInvalid(false);
     onSwap();
-  }, [fromCurrency, toCurrency, inputValue]);
-
-
-  useEffect(() => {
-    if (!fromCurrency || !toCurrency) return;
-    if (isInputChange && isOutputChange) {
-      setIsInputChange(false);
-      setOutputChange(false);
-      console.error("in和out同时改变值，有bug");
-      return;
-    }
-    if (isInputChange || isOutputChange) {
-      const reserve0 = allPairs[0]['reserve0']
-      const reserve1 = allPairs[0]['reserve1']
-      console.log("allpairs:", allPairs[0])
-      const token0 = tokens[getChain()].filter(
-        (item) => item.symbol === fromCurrency
-      )[0];
-      const token1 = tokens[getChain()].filter(
-        (item) => item.symbol === toCurrency
-      )[0];
-
-      console.log("reserve0:", reserve0,", reserve1:",reserve1, ", token0:", token0.decimals,", token1:", token1.decimals);
-      const reserve0WithDecimal = bigDecimal.divide(
-        reserve0.toString(),
-        Math.pow(10, token0.decimals),
-        token0.decimals
-      );
-      const reserve1WithDecimal = bigDecimal.divide(
-        reserve1.toString(),
-        Math.pow(10, token1.decimals),
-        token1.decimals
-      );
-
-      if (isInputChange && inputValue) {
-        const rate = bigDecimal.divide(
-          reserve1WithDecimal,
-          reserve0WithDecimal,
-          6
-        );
-        const lastValue = Number(bigDecimal.multiply(inputValue, rate)).toFixed(6);
-        setOutAmount(Number(lastValue)<MINIMUN_VALUE?"":lastValue);
-      }
-      if (isOutputChange && outAmount) {
-        const rate = bigDecimal.divide(
-          reserve0WithDecimal,
-          reserve1WithDecimal,
-          6
-        );
-        const lastValue = Number(bigDecimal.multiply(outAmount, rate)).toFixed(6);
-        setInputValue(Number(lastValue)<MINIMUN_VALUE?"":lastValue);
-      }
-    }
-
-    if (isInputChange) {
-      setIsInputChange(false);
-      if (!inputValue) setOutAmount("");
-    }
-    if (isOutputChange) {
-      setOutputChange(false);
-      if (!outAmount) setInputValue("");
-    }
-  }, [inputValue, outAmount]);
+  }, [fromCurrency, toCurrency]);
 
   const generateBtnText = () => {
     if (!wallet?.isConnected) return "Connect Wallet";
@@ -157,13 +118,54 @@ const Swap = () => {
 
   const changeInputValue = (v:string) => {
     setInputValue(v);
-    setIsInputChange(true);
+    if (!fromCurrency || !toCurrency) return;
+    if (isAmountZero(v)){setOutAmount("");return;}
+    
+    setIsFetching(true);
+    const inputToken = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const outputToken = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    tradeExactIn(
+      tryParseAmount(v, inputToken),
+      allPairs,
+      outputToken
+    ).then((ret) => {
+      setIsFetching(false);
+      if (ret) setOutAmount(ret);
+    }).catch((err)=>{
+      setIsFetching(false);
+    });
+    
+    checkBalance(inputToken);
   }
 
   const changeOutAmount = (v:string) => {
-    //console.log("change out amount:", v);
     setOutAmount(v);
-    setOutputChange(true);
+    if (!fromCurrency || !toCurrency) return;
+    if (isAmountZero(v)){ setInputValue(""); return;}
+    
+    setIsFetching(true);
+    const inputToken = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const outputToken = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    tradeExactIn(
+      tryParseAmount(v, outputToken),
+      allPairs,
+      inputToken
+    ).then((ret) => {
+      setIsFetching(false);
+      if (ret) setInputValue(ret);
+    }).catch((err) => {
+      setIsFetching(false);
+    });
+    
+    checkBalance(inputToken);
   }
 
   return (

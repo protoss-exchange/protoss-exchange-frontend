@@ -1,5 +1,5 @@
 import { Button, Modal } from "antd";
-import { FC, useContext } from "react";
+import { FC, useContext, useState } from "react";
 import TokenInput, { ITokenInputProps } from "../TokenInput";
 import bigDecimal from "js-big-decimal";
 import { addLiquidity } from "../../services/pool.service";
@@ -14,6 +14,10 @@ interface ILiquidityModalProps extends ITokenInputProps {
   exchangeRate: string;
   reserve0: any;
   reserve1: any;
+  isFetching: boolean;
+  insufficient: boolean;
+  setIsFetching: (v:boolean) => void;
+  setInsufficient: (v:boolean) => void;
 }
 const LiquidityModal: FC<ILiquidityModalProps> = ({
   visible,
@@ -30,8 +34,12 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   reserve1,
   swapNumber,
   exchangeRate,
+  isFetching,
+  insufficient,
+  setIsFetching,
+  setInsufficient,
 }) => {
-  const { wallet } = useContext(WalletContext);
+  const { validNetwork, wallet } = useContext(WalletContext);
   const onConfirmLiquidityAdd = () => {
     const token0 = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
@@ -50,6 +58,15 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
       wallet
     );
   };
+
+  const generateBtnText = () => {
+    if (!wallet?.isConnected) return "Connect Wallet";
+    if (!validNetwork) return "Invalid Network";
+    if (insufficient) return "Insufficient Balance";
+    if (isFetching) return "Calculating...";
+    return "Add Liquidity";
+  };
+
   return (
     <Modal
       centered
@@ -86,8 +103,15 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
           fontSize: "20px",
           marginTop: 20,
         }}
+        disabled={
+          !wallet?.isConnected ||
+          insufficient ||
+          !inputValue ||
+          isFetching ||
+          !validNetwork
+        }
       >
-        Add Liquidity
+        {generateBtnText()}
       </Button>
       <div className={styles.liquidityInfo}>
         <div className={styles.liquidityInfoItem}>

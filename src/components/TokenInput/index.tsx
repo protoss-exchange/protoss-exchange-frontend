@@ -63,7 +63,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         <span className={styles.indicator}>FROM</span>
         <Input
           placeholder="0.0"
-          style={{ width: 280 }}
+          style={{ width: 280, overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
           value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value)
@@ -124,7 +124,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           onChange={(e) => {
             changeOutAmount(e.target.value)
           }}
-          style={{ width: 280, backgroundColor: "transparent", color: "#fff" }}
+          style={{ width: 280, backgroundColor: "transparent", color: "#fff",overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
         />
          <div className={styles.fromCurrencySelectContainer}>
         <Select

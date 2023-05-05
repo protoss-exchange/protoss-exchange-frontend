@@ -15,9 +15,12 @@ import { useUpdateReserves } from "hooks/useUpdateReserves";
 import Slippage from "../../components/Slippage";
 import { LoadingOutlined } from "@ant-design/icons";
 import tokens from "enums/tokens";
-import { getChain } from "utils";
+import { getChain, isAmountZero } from "utils";
+import { Token } from "protoss-exchange-sdk";
+import { getBalance } from "services/balances.service";
 const Pool = () => {
   const [isFetching, setIsFetching] = useState(false);
+  const [insufficient, setInsufficient] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [showAllPools, setShowAllPools] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -35,7 +38,7 @@ const Pool = () => {
     reservePolling,
     updateReserveValues,
   } = useUpdateReserves();
-  const { wallet, allPairs, initialFetching } = useContext(WalletContext);
+  const { wallet, allPairs, validNetwork, initialFetching } = useContext(WalletContext);
   useEffect(() => {
     if (!wallet) return;
     setIsFetching(true);
@@ -45,39 +48,41 @@ const Pool = () => {
       })
       .finally(() => setIsFetching(false));
   }, [showAllPools]);
+
   const onAdd = (pair: PairInfo) => {
     setModalVisible(true);
     updateReserveValues(pair);
   };
 
   useEffect(() => {
-    if (reserve1 && reserve0) {
-     
-      const token0 = tokens[getChain()].filter(
-        (item) => item.symbol === fromCurrency
-      )[0];
-      const token1 = tokens[getChain()].filter(
-        (item) => item.symbol === toCurrency
-      )[0];
-      const reserve0WithDecimal = bigDecimal.divide(
-        reserve0.toString(),
-        Math.pow(10, token0.decimals),
-        token0.decimals
-      );
-      const reserve1WithDecimal = bigDecimal.divide(
-        reserve1.toString(),
-        Math.pow(10, token1.decimals),
-        token1.decimals
-      );
-      const rate = bigDecimal.divide(
-        reserve1WithDecimal,
-        reserve0WithDecimal,
-        6
-      );
-      setExchangeRate(rate);
-      setOutAmount(bigDecimal.multiply(inputValue, rate));
-    }
-  }, [inputValue, reserve0, reserve1]);
+    if (!reserve0 || !reserve1) {return;}
+    if (!inputValue) {setOutAmount("");return;}
+    if (!outAmount) {setInputValue("");return;}
+
+    const token0 = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const token1 = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    const reserve0WithDecimal = bigDecimal.divide(
+      reserve0.toString(),
+      Math.pow(10, token0.decimals),
+      token0.decimals
+    );
+    const reserve1WithDecimal = bigDecimal.divide(
+      reserve1.toString(),
+      Math.pow(10, token1.decimals),
+      token1.decimals
+    );
+    const rate = bigDecimal.divide(
+      reserve1WithDecimal,
+      reserve0WithDecimal,
+      6
+    );
+    setExchangeRate(rate);
+    setOutAmount(bigDecimal.multiply(inputValue, rate));
+  }, [reserve0, reserve1]);
 
 
   const onLiquidityModalCancel = () => {
@@ -173,8 +178,78 @@ const Pool = () => {
     ));
   };
 
+  const getNewReserve = (isInput:boolean) => {
+    if (!reserve0 || !reserve1) {return;}
+
+    setIsFetching(true);
+    const token0 = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const token1 = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    const reserve0WithDecimal = bigDecimal.divide(
+      reserve0.toString(),
+      Math.pow(10, token0.decimals),
+      token0.decimals
+    );
+    const reserve1WithDecimal = bigDecimal.divide(
+      reserve1.toString(),
+      Math.pow(10, token1.decimals),
+      token1.decimals
+    );
+    const rate = bigDecimal.divide(
+      reserve0WithDecimal,
+      reserve1WithDecimal,
+      6
+    );
+    checkBalance(token0);
+    setExchangeRate(rate);
+
+    setIsFetching(false);
+    return isInput? rate : bigDecimal.divide(
+      reserve1WithDecimal,
+      reserve0WithDecimal,
+      6
+    );
+  }
+
   const changeOutAmount = (v:string) => {
     setOutAmount(v);
+    if (!reserve0 || !reserve1) {return;}
+    if (isAmountZero(v)){ setInputValue("");return;}
+    const rate = getNewReserve(false);
+    
+    setInputValue(bigDecimal.multiply(v, rate));
+  }
+
+  const changeInputValue = (v:string) => {
+    setInputValue(v);
+    
+    if (isAmountZero(v)){ setOutAmount("");return; }
+
+    const rate = getNewReserve(true);
+    setOutAmount(bigDecimal.multiply(v, rate));
+  }
+
+  const chagneFromCurreny = (v:string) => {
+    console.log("from current:", v);
+    setFromCurrency(v);
+    
+  }
+
+  const changeToCurreny = (v:string) => {
+    console.log("to current:", v);
+    setToCurrency(v);
+  }
+
+  const checkBalance = async(inputToken: Token) => {
+    if (wallet && validNetwork) {
+      const inputBalance = await getBalance(wallet, inputToken);
+      if (Number(inputBalance) < Number(inputValue)) {
+        setInsufficient(true);
+      } else setInsufficient(false);
+    }
   }
 
   return (
@@ -206,17 +281,21 @@ const Pool = () => {
         visible={modalVisible}
         onCancel={onLiquidityModalCancel}
         inputValue={inputValue}
-        setInputValue={setInputValue}
+        setInputValue={changeInputValue}
         fromCurrency={fromCurrency}
         exchangeRate={exchangeRate}
-        setFromCurrency={setFromCurrency}
+        setFromCurrency={chagneFromCurreny}
         reserve0={reserve0}
         reserve1={reserve1}
         toCurrency={toCurrency}
-        setToCurrency={setToCurrency}
+        setToCurrency={changeToCurreny}
         outAmount={outAmount}
         changeOutAmount={changeOutAmount}
-      />
+        isFetching={isFetching}   
+        setIsFetching={setIsFetching}
+        insufficient={insufficient}
+        setInsufficient={setInsufficient}  
+        />
     </div>
   );
 };

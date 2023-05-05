@@ -89,3 +89,8 @@ export function getPairDecimals(
     )?.decimals ?? 18
   );
 }
+
+export function isAmountZero(v:string) {
+  if (!v || 0 == Number(v)) return true;
+  else return false;
+}
