@@ -58,7 +58,7 @@ export const tradeExactIn = async (
   if (!currencyAAmount) return null;
   const currencyA = currencyAAmount.token;
   let swapToken = false;
-  const address = allPairs.filter((item) => {
+  const pair = allPairs.filter((item) => {
     if (
       item.token1?.address === currencyA.address &&
       item.token0?.address === currencyB.address
@@ -72,7 +72,8 @@ export const tradeExactIn = async (
     ) {
       return true;
     }
-  })[0].address;
+  })[0];
+  const address = pair.address;
   const contract = new Contract(
     ProtossSwapPairABI as Abi,
     address,
@@ -89,24 +90,25 @@ export const tradeExactIn = async (
   //   maxHops: 3,
   //   maxNumResults: 1,
   // })[0];
-  const reserve0WithDecimal = bigDecimal.divide(
+  let reserve0WithDecimal = bigDecimal.divide(
     reserve0.toString(),
-    Math.pow(10, currencyA.decimals),
-    currencyA.decimals
+    Math.pow(10, Number(pair.token0?.decimals)),
+    Number(pair.token0?.decimals)
   );
-  const reserve1WithDecimal = bigDecimal.divide(
+  let reserve1WithDecimal = bigDecimal.divide(
     reserve1.toString(),
-    Math.pow(10, currencyB.decimals),
-    currencyB.decimals
+    Math.pow(10, Number(pair.token1?.decimals)),
+    Number(pair.token1?.decimals)
   );
+
   return swapToken
     ? bigDecimal.multiply(
         bigDecimal.divide(reserve0WithDecimal, reserve1WithDecimal, 6),
-        currencyAAmount.toFixed(12) //currencyB.decimals
+        currencyAAmount.toFixed(currencyB.decimals>currencyA.decimals?currencyA.decimals:currencyB.decimals)
       )
     : bigDecimal.multiply(
         bigDecimal.divide(reserve1WithDecimal, reserve0WithDecimal, 6),
-        currencyAAmount.toFixed(12)  //currencyA.decimals
+        currencyAAmount.toFixed(currencyA.decimals) 
       );
 };
 

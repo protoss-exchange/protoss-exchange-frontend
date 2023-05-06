@@ -80,7 +80,11 @@ const Pool = () => {
       reserve0WithDecimal,
       6
     );
-    setExchangeRate(rate);
+    setExchangeRate(bigDecimal.divide(
+      reserve0WithDecimal,
+      reserve1WithDecimal,
+      6
+    ));
     setOutAmount(bigDecimal.multiply(inputValue, rate));
   }, [reserve0, reserve1]);
 
@@ -180,7 +184,7 @@ const Pool = () => {
 
   const getNewReserve = (isInput:boolean) => {
     if (!reserve0 || !reserve1) {return;}
-
+    
     setIsFetching(true);
     const token0 = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
@@ -207,11 +211,11 @@ const Pool = () => {
     setExchangeRate(rate);
 
     setIsFetching(false);
-    return isInput? rate : bigDecimal.divide(
+    return isInput? bigDecimal.divide(
       reserve1WithDecimal,
       reserve0WithDecimal,
       6
-    );
+    ):rate;
   }
 
   const changeOutAmount = (v:string) => {
@@ -231,18 +235,7 @@ const Pool = () => {
     const rate = getNewReserve(true);
     setOutAmount(bigDecimal.multiply(v, rate));
   }
-
-  const chagneFromCurreny = (v:string) => {
-    console.log("from current:", v);
-    setFromCurrency(v);
-    
-  }
-
-  const changeToCurreny = (v:string) => {
-    console.log("to current:", v);
-    setToCurrency(v);
-  }
-
+  
   const checkBalance = async(inputToken: Token) => {
     if (wallet && validNetwork) {
       const inputBalance = await getBalance(wallet, inputToken);
@@ -284,11 +277,11 @@ const Pool = () => {
         setInputValue={changeInputValue}
         fromCurrency={fromCurrency}
         exchangeRate={exchangeRate}
-        setFromCurrency={chagneFromCurreny}
+        setFromCurrency={setFromCurrency}
         reserve0={reserve0}
         reserve1={reserve1}
         toCurrency={toCurrency}
-        setToCurrency={changeToCurreny}
+        setToCurrency={setToCurrency}
         outAmount={outAmount}
         changeOutAmount={changeOutAmount}
         isFetching={isFetching}   

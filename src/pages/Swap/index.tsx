@@ -40,15 +40,16 @@ const Swap = () => {
     if (!fromCurrency || !toCurrency) return;
     setIsFetching(true);
 
-    if (!inputValue && !isAmountZero(outAmount)) {
+    if (isAmountZero(inputValue) && !isAmountZero(outAmount)) {
       const inputToken = tokens[getChain()].filter(
         (item) => item.symbol === fromCurrency
       )[0];
       const outputToken = tokens[getChain()].filter(
         (item) => item.symbol === toCurrency
       )[0];
+      const newOut = Number(outAmount).toFixed(outputToken.decimals);
       tradeExactIn(
-        tryParseAmount(outAmount, outputToken),
+        tryParseAmount(newOut, outputToken),
         allPairs,
         inputToken
       ).then((ret) => {
@@ -65,8 +66,10 @@ const Swap = () => {
       const outputToken = tokens[getChain()].filter(
         (item) => item.symbol === toCurrency
       )[0];
+      const newInput = Number(inputValue).toFixed(inputToken.decimals);
+      console.log("inputvalue:", newInput);
       tradeExactIn(
-        tryParseAmount(inputValue, inputToken),
+        tryParseAmount(newInput, inputToken),
         allPairs,
         outputToken
       ).then((ret) => {
@@ -128,14 +131,16 @@ const Swap = () => {
     const outputToken = tokens[getChain()].filter(
       (item) => item.symbol === toCurrency
     )[0];
+    const newInput = Number(v).toFixed(inputToken.decimals);
     tradeExactIn(
-      tryParseAmount(v, inputToken),
+      tryParseAmount(newInput, inputToken),
       allPairs,
       outputToken
     ).then((ret) => {
       setIsFetching(false);
       if (ret) setOutAmount(ret);
     }).catch((err)=>{
+      console.log("input amount err:", err)
       setIsFetching(false);
     });
     
@@ -154,14 +159,16 @@ const Swap = () => {
     const outputToken = tokens[getChain()].filter(
       (item) => item.symbol === toCurrency
     )[0];
+    const newOut = Number(v).toFixed(outputToken.decimals);
     tradeExactIn(
-      tryParseAmount(v, outputToken),
+      tryParseAmount(newOut, outputToken),
       allPairs,
       inputToken
     ).then((ret) => {
       setIsFetching(false);
       if (ret) setInputValue(ret);
     }).catch((err) => {
+      console.log("out amount err:", err)
       setIsFetching(false);
     });
     

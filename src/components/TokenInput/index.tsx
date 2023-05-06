@@ -30,10 +30,24 @@ const TokenInput: FC<ITokenInputProps> = ({
   changeOutAmount,
   swapNumber
 }) => {
-  const { wallet, validNetwork } = useContext(WalletContext);
+  const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [balance, setBalance] = useState(0);
   const [toBalance, setToBalance] = useState(0);
+  const [toCurrencyDict, setToCurrencyDict] = useState([]);
+  const [fromCurrencyDict, setFromCurrencyDict] = useState([]);
   useEffect(() => {
+    // let tmpDict = [];
+    // for(let i = 0; i < allPairs.length; ++i) {
+    //   if (allPairs[i].token0?.address == fromCurrency 
+    //     && allPairs[i].token1?.address) {
+    //     tmpDict.push(allPairs[i].token1?.address);
+    //   }
+    //   if (allPairs[i].token1?.address == fromCurrency 
+    //     && allPairs[i].token0?.address) {
+    //     tmpDict.push(allPairs[i].token0?.address);
+    //   }
+    // }
+    // setToCurrencyDict(tmpDict);
     if (wallet) {
       getBalance(
         wallet,
@@ -71,14 +85,22 @@ const TokenInput: FC<ITokenInputProps> = ({
         />
         <div className={styles.fromCurrencySelectContainer}>
           <Select value={fromCurrency} onSelect={setFromCurrency}>
-            {tokens[getChain()].map((item) => (
+            {allPairs.map((item) => (
+              item.token1?.symbol==toCurrency?
               <Option
-                key={item.symbol}
-                value={item.symbol}
-                disabled={item.symbol === toCurrency}
+                key={item.token0?.symbol}
+                value={item.token0?.symbol}
+                disabled={item.token0?.symbol === toCurrency}
               >
-                {item.name}
-              </Option>
+                {item.token0?.name}
+              </Option> : (item.token0?.symbol==toCurrency?
+               <Option
+               key={item.token1?.symbol}
+               value={item.token1?.symbol}
+               disabled={item.token1?.symbol === toCurrency}
+             >
+               {item.token1?.name}
+             </Option> : "")
             ))}
           </Select>
           <div className={styles.balanceBox}>
@@ -89,7 +111,7 @@ const TokenInput: FC<ITokenInputProps> = ({
                 <Text className={styles.balance} ellipsis={true}>
                   Balance:{" "}
                   <Tooltip placement={"bottomLeft"} title={balance}>
-                    {balance}
+                    { !fromCurrency?"-":balance}
                   </Tooltip>
                 </Text>
                 <span
@@ -149,7 +171,7 @@ const TokenInput: FC<ITokenInputProps> = ({
                 <Text className={styles.balance} ellipsis={true}>
                   Balance:{" "}
                   <Tooltip placement={"bottomLeft"} title={toBalance}>
-                    {toBalance}
+                    {!toCurrency ? "-":toBalance}
                   </Tooltip>
                 </Text>
             ) : (
