@@ -197,5 +197,6 @@ export const onSwapToken = async (
     [ProtossERC20ABI as Abi, ProtossRouterABI as Abi],
     { maxFee: 17390000 }
   );
-  // console.log(ret2);
+  console.log("====tx====",ret2);
+  return ret2;
 };

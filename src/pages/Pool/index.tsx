@@ -4,6 +4,7 @@ import { Button, Table } from "antd";
 import styles from "./index.module.css";
 import { LiquidityModal } from "components";
 import {
+  addLiquidity,
   getAllPoolPairs,
   getPairBalances,
   PairInfo,
@@ -18,6 +19,8 @@ import tokens from "enums/tokens";
 import { getChain, isAmountZero } from "utils";
 import { Token } from "protoss-exchange-sdk";
 import { getBalance } from "services/balances.service";
+import ConfirmModal from "components/ConfirmModal";
+import PendingModal from "components/PendingModal";
 const Pool = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [insufficient, setInsufficient] = useState(false);
@@ -28,6 +31,10 @@ const Pool = () => {
   const [myPools, setMyPools] = useState<PairInfo[]>([]);
   const [exchangeRate, setExchangeRate] = useState("0");
   const [withdrawSlippage, setWithdrawSlippage] = useState(1);
+  const [resultVisible, setResultVisible] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("0x056e6f563f188890d0c3fbbfccb35f3a91c3eba62e7cddef80f5f0cd6514ac89")
+  const [curTimeId, setCurTimeId] = useState(0);
+  const [pendVisible, setPendVisible] = useState(false);
   const {
     reserve0,
     reserve1,
@@ -235,7 +242,7 @@ const Pool = () => {
     const rate = getNewReserve(true);
     setOutAmount(bigDecimal.multiply(v, rate));
   }
-  
+
   const checkBalance = async(inputToken: Token) => {
     if (wallet && validNetwork) {
       const inputBalance = await getBalance(wallet, inputToken);
@@ -245,8 +252,43 @@ const Pool = () => {
     }
   }
 
+  const onConfirmLiquidityAdd = async() => {
+    const token0 = tokens[getChain()].filter(
+      (item) => item.symbol === fromCurrency
+    )[0];
+    const token1 = tokens[getChain()].filter(
+      (item) => item.symbol === toCurrency
+    )[0];
+    if (!token0 || !token1 || !wallet) return;
+    let ret = await addLiquidity(
+      token0,
+      token1,
+      inputValue,
+      outAmount,
+      reserve0,
+      reserve1,
+      wallet
+    );
+    console.log("add liqi hash:", ret);
+
+    if (ret && ret.hasOwnProperty('transaction_hash')) {
+      if (curTimeId>0) clearTimeout(curTimeId);
+      setResultVisible(true);
+      setTransactionHash(ret['transaction_hash']);
+      setPendVisible(true);
+      const tmpId = setTimeout(()=>{
+        setPendVisible(false);
+      }, 12000);
+      setCurTimeId(Number(tmpId));
+    }
+  };
+
   return (
     <div>
+       <PendingModal
+          visible={pendVisible} 
+          transactionHash={transactionHash}
+        />
       <div className={styles.header}>Pools Overview</div>
       <div className={styles.poolsBtn}>
         <Button ghost={!showAllPools} onClick={() => setShowAllPools(true)}>
@@ -270,6 +312,12 @@ const Pool = () => {
       ) : (
         generateMyPoolItems()
       )}
+       <ConfirmModal 
+        visible={resultVisible} 
+        onCancel={()=>setResultVisible(false)}
+        closeBtnClick={()=>setResultVisible(false)}
+        transactionHash={transactionHash}
+      />
       <LiquidityModal
         visible={modalVisible}
         onCancel={onLiquidityModalCancel}
@@ -285,9 +333,8 @@ const Pool = () => {
         outAmount={outAmount}
         changeOutAmount={changeOutAmount}
         isFetching={isFetching}   
-        setIsFetching={setIsFetching}
         insufficient={insufficient}
-        setInsufficient={setInsufficient}  
+        onConfirmLiquidityAdd={onConfirmLiquidityAdd}
         />
     </div>
   );

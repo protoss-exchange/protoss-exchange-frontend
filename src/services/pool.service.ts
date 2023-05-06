@@ -268,7 +268,7 @@ export const addLiquidity = async (
         .toString()
     )
   );
-  wallet.account?.execute([
+  let result = wallet.account?.execute([
     {
       entrypoint: "approve",
       contractAddress: tokenA.address,
@@ -298,6 +298,7 @@ export const addLiquidity = async (
       ],
     },
   ]);
+  return result;
 };
 
 export const removeLiquidity = (

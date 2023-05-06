@@ -1,0 +1,12 @@
+.container {
+    width: 130px;
+    position: fixed;
+    top: 102px;
+    right: 20px;
+    background: rgba(23,30,46,0.8);
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

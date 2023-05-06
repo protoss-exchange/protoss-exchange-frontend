@@ -1,6 +1,6 @@
 import { onSwapToken, tradeExactIn } from "services/trade.service";
 import { tokens } from "enums/tokens";
-import { getChain, isAmountZero } from "utils";
+import { getChain, getStarkscanLink, isAmountZero } from "utils";
 import { tryParseAmount } from "utils/maths";
 import { useContext, useEffect, useState } from "react";
 import { Button, Modal } from "antd";
@@ -12,6 +12,9 @@ import { SettingOutlined } from "@ant-design/icons";
 import Slippage from "../../components/Slippage";
 import bigDecimal from "js-big-decimal";
 import { Token } from "protoss-exchange-sdk";
+import ConfirmModal from "components/ConfirmModal";
+import PendingModal from "components/PendingModal";
+
 
 const Swap = () => {
   const [fromCurrency, setFromCurrency] = useState(
@@ -23,9 +26,13 @@ const Swap = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [slippage, setSlippage] = useState(1);
   const [slippageAdjustVisible, setSlippageAdjustVisible] = useState(false);
+  const [resultVisible, setResultVisible] = useState(false);
+  const [pendVisible, setPendVisible] = useState(false);
   const [inputInvalid, setInputInvalid] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("0x056e6f563f188890d0c3fbbfccb35f3a91c3eba62e7cddef80f5f0cd6514ac89")
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
+  const [curTimeId, setCurTimeId] = useState(0);
 
   const checkBalance = async(inputToken: Token) => {
     if (wallet && validNetwork) {
@@ -67,7 +74,6 @@ const Swap = () => {
         (item) => item.symbol === toCurrency
       )[0];
       const newInput = Number(inputValue).toFixed(inputToken.decimals);
-      console.log("inputvalue:", newInput);
       tradeExactIn(
         tryParseAmount(newInput, inputToken),
         allPairs,
@@ -108,8 +114,8 @@ const Swap = () => {
     return "Swap";
   };
 
-  const swapToken = () => {
-    onSwapToken(
+  const swapToken = async() => {
+    const ret = await onSwapToken(
       wallet,
       inputValue,
       Number(outAmount),
@@ -117,6 +123,17 @@ const Swap = () => {
       tokens[getChain()].filter((item) => item.symbol === toCurrency)[0],
       slippage
     );
+    console.log("get tx info:", ret);
+    if (ret && ret.hasOwnProperty('transaction_hash')) {
+      if (curTimeId>0) clearTimeout(curTimeId);
+      setResultVisible(true);
+      setTransactionHash(ret['transaction_hash']);
+      setPendVisible(true);
+      const tmpId = setTimeout(()=>{
+        setPendVisible(false);
+      }, 12000);
+      setCurTimeId(Number(tmpId));
+    }
   };
 
   const changeInputValue = (v:string) => {
@@ -176,60 +193,73 @@ const Swap = () => {
   }
 
   return (
-    <div className={styles.swapContainer}>
-      <Slippage slippage={slippage} setSlippage={setSlippage} />
-      <TokenInput
-        inputValue={inputValue}
-        setInputValue={changeInputValue}
-        fromCurrency={fromCurrency}
-        setFromCurrency={setFromCurrency}
-        toCurrency={toCurrency}
-        setToCurrency={setToCurrency}
-        outAmount={outAmount}
-        changeOutAmount={changeOutAmount}
-        swapNumber={swapNumber}
-      />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <Button
-          onClick={swapToken}
+    <div>
+      <PendingModal
+          visible={pendVisible} 
+          transactionHash={transactionHash}
+        />
+      <div className={styles.swapContainer}>
+        <Slippage slippage={slippage} setSlippage={setSlippage} />
+        <ConfirmModal 
+          visible={resultVisible} 
+          onCancel={()=>setResultVisible(false)}
+          closeBtnClick={()=>setResultVisible(false)}
+          transactionHash={transactionHash}
+        />
+        <TokenInput
+          inputValue={inputValue}
+          setInputValue={changeInputValue}
+          fromCurrency={fromCurrency}
+          setFromCurrency={setFromCurrency}
+          toCurrency={toCurrency}
+          setToCurrency={setToCurrency}
+          outAmount={outAmount}
+          changeOutAmount={changeOutAmount}
+          swapNumber={swapNumber}
+        />
+        <div
           style={{
-            height: 60,
-            width: 300,
-            borderRadius: 300,
-            backgroundColor: "#112545",
-            color: "white",
-            fontSize: "20px",
-            border: "none",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
           }}
-          disabled={
-            !wallet?.isConnected ||
-            insufficient ||
-            !inputValue ||
-            isFetching ||
-            inputInvalid ||
-            !validNetwork
-          }
         >
-          {generateBtnText()}
-        </Button>
-        <div className={styles.swapDetail}>
-          <div className={styles.detailInfo}>
-            <span>Expected Output</span>
-            <span>{outAmount}</span>
-          </div>
-          <div className={styles.detailInfo}>
-            <span>Minimum received after slippage ({slippage}%)</span>
-            <span>{(Number(outAmount) * (1 - slippage / 100)).toFixed(6)}</span>
+          <Button
+            onClick={swapToken}
+            style={{
+              height: 60,
+              width: 300,
+              borderRadius: 300,
+              backgroundColor: "#112545",
+              color: "white",
+              fontSize: "20px",
+              border: "none",
+            }}
+            disabled={
+              !wallet?.isConnected ||
+              insufficient ||
+              !inputValue ||
+              isFetching ||
+              inputInvalid ||
+              !validNetwork
+            }
+          >
+            {generateBtnText()}
+          </Button>
+          <div className={styles.swapDetail}>
+            <div className={styles.detailInfo}>
+              <span>Expected Output</span>
+              <span>{outAmount}</span>
+            </div>
+            <div className={styles.detailInfo}>
+              <span>Minimum received after slippage ({slippage}%)</span>
+              <span>{(Number(outAmount) * (1 - slippage / 100)).toFixed(6)}</span>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 };

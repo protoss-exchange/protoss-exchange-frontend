@@ -16,8 +16,7 @@ interface ILiquidityModalProps extends ITokenInputProps {
   reserve1: any;
   isFetching: boolean;
   insufficient: boolean;
-  setIsFetching: (v:boolean) => void;
-  setInsufficient: (v:boolean) => void;
+  onConfirmLiquidityAdd: () => void;
 }
 const LiquidityModal: FC<ILiquidityModalProps> = ({
   visible,
@@ -36,28 +35,27 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   exchangeRate,
   isFetching,
   insufficient,
-  setIsFetching,
-  setInsufficient,
+  onConfirmLiquidityAdd,
 }) => {
   const { validNetwork, wallet } = useContext(WalletContext);
-  const onConfirmLiquidityAdd = () => {
-    const token0 = tokens[getChain()].filter(
-      (item) => item.symbol === fromCurrency
-    )[0];
-    const token1 = tokens[getChain()].filter(
-      (item) => item.symbol === toCurrency
-    )[0];
-    if (!token0 || !token1 || !wallet) return;
-    addLiquidity(
-      token0,
-      token1,
-      inputValue,
-      outAmount,
-      reserve0,
-      reserve1,
-      wallet
-    );
-  };
+  // const onConfirmLiquidityAdd = () => {
+  //   const token0 = tokens[getChain()].filter(
+  //     (item) => item.symbol === fromCurrency
+  //   )[0];
+  //   const token1 = tokens[getChain()].filter(
+  //     (item) => item.symbol === toCurrency
+  //   )[0];
+  //   if (!token0 || !token1 || !wallet) return;
+  //   addLiquidity(
+  //     token0,
+  //     token1,
+  //     inputValue,
+  //     outAmount,
+  //     reserve0,
+  //     reserve1,
+  //     wallet
+  //   );
+  // };
 
   const generateBtnText = () => {
     if (!wallet?.isConnected) return "Connect Wallet";

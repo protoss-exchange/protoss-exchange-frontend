@@ -94,3 +94,21 @@ export function isAmountZero(v:string) {
   if (!v || 0 == Number(v)) return true;
   else return false;
 }
+
+export function getStarkscanLink(data: string, type: 'transaction' | 'block' | 'contract'): string {
+  const host = CHAIN_ID === "TESTNET" ? 'testnet.' : '';
+  const prefix = `https://${host}starkscan.co`
+
+  switch (type) {
+    case 'transaction': {
+      return `${prefix}/tx/${data}`
+    }
+    case 'block': {
+      return `${prefix}/block/${data}`
+    }
+    case 'contract':
+    default: {
+      return `${prefix}/contract/${data}`
+    }
+  }
+}
