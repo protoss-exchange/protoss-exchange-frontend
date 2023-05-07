@@ -18,6 +18,8 @@ export interface ITokenInputProps {
   outAmount: string;
   changeOutAmount: (v: string) => void;
   swapNumber?: () => void;
+  inputDisable: boolean;
+  outputDisable: boolean;
 }
 const { Option } = Select;
 const { Text } = Typography;
@@ -29,14 +31,14 @@ const TokenInput: FC<ITokenInputProps> = ({
   setToCurrency,
   toCurrency,
   outAmount,
+  inputDisable,
+  outputDisable,
   changeOutAmount,
   swapNumber
 }) => {
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [balance, setBalance] = useState(0);
   const [toBalance, setToBalance] = useState(0);
-  const [toCurrencyDict, setToCurrencyDict] = useState([]);
-  const [fromCurrencyDict, setFromCurrencyDict] = useState([]);
   useEffect(() => {
     // let tmpDict = [];
     // for(let i = 0; i < allPairs.length; ++i) {
@@ -79,8 +81,10 @@ const TokenInput: FC<ITokenInputProps> = ({
         <span className={styles.indicator}>FROM</span>
         <Input
           placeholder="0.0"
-          style={{ width: 280, overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
+          disabled={inputDisable}
+          style={{ width: 280,backgroundColor: "transparent", overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
           value={inputValue}
+          className={inputDisable?styles.inputDisable:styles.inputEnable}
           onChange={(e) => {
             setInputValue(e.target.value)
           }}
@@ -137,10 +141,12 @@ const TokenInput: FC<ITokenInputProps> = ({
         <Input
           placeholder="0.0"
           value={outAmount}
+          disabled={outputDisable}
+          className={inputDisable?styles.inputDisable:styles.inputEnable}
           onChange={(e) => {
             changeOutAmount(e.target.value)
           }}
-          style={{ width: 280, backgroundColor: "transparent", color: "#fff",overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
+          style={{ width: 280, backgroundColor: "transparent", overflow:"hidden", whiteSpace:"nowrap",textOverflow:"ellipsis"}}
         />
          <div className={styles.fromCurrencySelectContainer}>
         <Select

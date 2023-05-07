@@ -30,6 +30,8 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   toCurrency,
   outAmount,
   changeOutAmount,
+  inputDisable,
+  outputDisable,
   reserve0,
   reserve1,
   liquidity,
@@ -83,6 +85,8 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
       }}
     >
       <TokenInput
+        outputDisable={outputDisable}
+        inputDisable={inputDisable}
         inputValue={inputValue}
         setInputValue={setInputValue}
         fromCurrency={fromCurrency}

@@ -22,6 +22,14 @@
     right: 170px
 }
 
+.inputEnable {
+    color: #fff;
+}
+
+.inputDisable {
+    color: #999;
+}
+
 .indicator {
     font-weight: 600;
     position: absolute;

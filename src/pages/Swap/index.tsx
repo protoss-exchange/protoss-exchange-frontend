@@ -29,6 +29,8 @@ const Swap = () => {
   const [resultVisible, setResultVisible] = useState(false);
   const [pendVisible, setPendVisible] = useState(false);
   const [inputInvalid, setInputInvalid] = useState(false);
+  const [inputDisable, setInputDisable] = useState(false);
+  const [outputDisable, setOutputDisable] = useState(false);
   const [transactionHash, setTransactionHash] = useState("0x056e6f563f188890d0c3fbbfccb35f3a91c3eba62e7cddef80f5f0cd6514ac89")
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
@@ -47,6 +49,8 @@ const Swap = () => {
   const onSwap = async () => {
     if (!fromCurrency || !toCurrency) return;
     setIsFetching(true);
+    setInputDisable(true);
+    setOutputDisable(true);
 
     if (isAmountZero(inputValue) && !isAmountZero(outAmount)) {
       const inputToken = tokens[getChain()].filter(
@@ -62,9 +66,13 @@ const Swap = () => {
         inputToken
       ).then((ret) => {
         setIsFetching(false);
+        setInputDisable(false);
+        setOutputDisable(false);
         if (ret) setInputValue(ret);
       }).catch((err) => {
         setIsFetching(false);
+        setInputDisable(false);
+        setOutputDisable(false);
       });
       checkBalance(inputToken);
     }else {
@@ -81,9 +89,13 @@ const Swap = () => {
         outputToken
       ).then((ret) => {
         setIsFetching(false);
+        setInputDisable(false);
+        setOutputDisable(false);
         if (ret) setOutAmount(ret);
       }).catch((err) => {
         setIsFetching(false);
+        setInputDisable(false);
+        setOutputDisable(false);
       });
       checkBalance(inputToken);
     }
@@ -144,6 +156,7 @@ const Swap = () => {
     if (isAmountZero(v)){setOutAmount("");return;}
     
     setIsFetching(true);
+    setOutputDisable(true);
     const inputToken = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
     )[0];
@@ -157,10 +170,12 @@ const Swap = () => {
       outputToken
     ).then((ret) => {
       setIsFetching(false);
+      setOutputDisable(false);
       if (ret) setOutAmount(ret);
     }).catch((err)=>{
       console.log("input amount err:", err)
       setIsFetching(false);
+      setOutputDisable(false);
     });
     
     checkBalance(inputToken);
@@ -172,6 +187,7 @@ const Swap = () => {
     if (isAmountZero(v)){ setInputValue(""); return;}
     
     setIsFetching(true);
+    setInputDisable(true);
     const inputToken = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
     )[0];
@@ -185,10 +201,12 @@ const Swap = () => {
       inputToken
     ).then((ret) => {
       setIsFetching(false);
+      setInputDisable(false);
       if (ret) setInputValue(ret);
     }).catch((err) => {
       console.log("out amount err:", err)
       setIsFetching(false);
+      setInputDisable(false);
     });
     
     checkBalance(inputToken);
@@ -238,6 +256,8 @@ const Swap = () => {
           transactionHash={transactionHash}
         />
         <TokenInput
+          outputDisable={outputDisable}
+          inputDisable={inputDisable}
           inputValue={inputValue}
           setInputValue={changeInputValue}
           fromCurrency={fromCurrency}

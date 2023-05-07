@@ -36,6 +36,8 @@ const Pool = () => {
   const [curTimeId, setCurTimeId] = useState(0);
   const [pendVisible, setPendVisible] = useState(false);
   const [liquidity, setLiquidity] = useState(false);
+  const [inputDisable, setInputDisable] = useState(false);
+  const [outputDisable, setOutputDisable] = useState(false);
   const {
     reserve0,
     reserve1,
@@ -69,6 +71,8 @@ const Pool = () => {
     if (!inputValue) {setOutAmount("");return;}
     if (!outAmount) {setInputValue("");return;}
 
+    setInputDisable(true);
+    setOutputDisable(true);
     const token0 = tokens[getChain()].filter(
       (item) => item.symbol === fromCurrency
     )[0];
@@ -96,6 +100,9 @@ const Pool = () => {
       6
     ));
     setOutAmount(bigDecimal.multiply(inputValue, rate));
+
+    setInputDisable(false);
+    setOutputDisable(false);
   }, [reserve0, reserve1]);
 
 
@@ -232,9 +239,11 @@ const Pool = () => {
     setOutAmount(v);
     if (!reserve0 || !reserve1) {return;}
     if (isAmountZero(v)){ setInputValue("");return;}
+
+    setInputDisable(true);
     const rate = getNewReserve(false);
-    
     setInputValue(bigDecimal.multiply(v, rate));
+    setInputDisable(false);
   }
 
   const changeInputValue = (v:string) => {
@@ -242,8 +251,10 @@ const Pool = () => {
     if (!reserve0 || !reserve1) {return;}
     if (isAmountZero(v)){ setOutAmount("");return; }
 
+    setOutputDisable(true);
     const rate = getNewReserve(true);
     setOutAmount(bigDecimal.multiply(v, rate));
+    setOutputDisable(false);
   }
 
   const checkBalance = async(inputToken: Token) => {
@@ -357,6 +368,8 @@ const Pool = () => {
         transactionHash={transactionHash}
       />
       <LiquidityModal
+        outputDisable={outputDisable}
+        inputDisable={inputDisable}
         visible={modalVisible}
         onCancel={onLiquidityModalCancel}
         inputValue={inputValue}
