@@ -142,7 +142,7 @@ const TokenInput: FC<ITokenInputProps> = ({
           placeholder="0.0"
           value={outAmount}
           disabled={outputDisable}
-          className={inputDisable?styles.inputDisable:styles.inputEnable}
+          className={outputDisable?styles.inputDisable:styles.inputEnable}
           onChange={(e) => {
             changeOutAmount(e.target.value)
           }}
