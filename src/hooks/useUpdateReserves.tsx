@@ -25,6 +25,8 @@ export const useUpdateReserves = () => {
   return {
     reserve0,
     reserve1,
+    setReserve0,
+    setReserve1,
     setFromCurrency,
     setToCurrency,
     fromCurrency,

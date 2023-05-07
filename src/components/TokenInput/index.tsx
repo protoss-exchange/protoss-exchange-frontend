@@ -85,22 +85,14 @@ const TokenInput: FC<ITokenInputProps> = ({
         />
         <div className={styles.fromCurrencySelectContainer}>
           <Select value={fromCurrency} onSelect={setFromCurrency}>
-            {allPairs.map((item) => (
-              item.token1?.symbol==toCurrency?
+            {tokens[getChain()].map((item) => (
               <Option
-                key={item.token0?.symbol}
-                value={item.token0?.symbol}
-                disabled={item.token0?.symbol === toCurrency}
+                key={item.symbol}
+                value={item.symbol}
+                disabled={item.symbol === toCurrency}
               >
-                {item.token0?.name}
-              </Option> : (item.token0?.symbol==toCurrency?
-               <Option
-               key={item.token1?.symbol}
-               value={item.token1?.symbol}
-               disabled={item.token1?.symbol === toCurrency}
-             >
-               {item.token1?.name}
-             </Option> : "")
+                {item.name}
+              </Option>
             ))}
           </Select>
           <div className={styles.balanceBox}>

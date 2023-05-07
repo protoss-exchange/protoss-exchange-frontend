@@ -35,9 +35,12 @@ const Pool = () => {
   const [transactionHash, setTransactionHash] = useState("0x056e6f563f188890d0c3fbbfccb35f3a91c3eba62e7cddef80f5f0cd6514ac89")
   const [curTimeId, setCurTimeId] = useState(0);
   const [pendVisible, setPendVisible] = useState(false);
+  const [liquidity, setLiquidity] = useState(false);
   const {
     reserve0,
     reserve1,
+    setReserve0,
+    setReserve1,
     fromCurrency,
     toCurrency,
     setFromCurrency,
@@ -236,7 +239,7 @@ const Pool = () => {
 
   const changeInputValue = (v:string) => {
     setInputValue(v);
-    
+    if (!reserve0 || !reserve1) {return;}
     if (isAmountZero(v)){ setOutAmount("");return; }
 
     const rate = getNewReserve(true);
@@ -283,6 +286,41 @@ const Pool = () => {
     }
   };
 
+  const changeFromCurrency = (v:string) => {
+    setLiquidity(false)
+    setFromCurrency(v);
+    const pair = allPairs.filter((item) => {
+      if ((v == item.token0?.symbol 
+        && toCurrency == item.token1?.symbol) ||
+        (v == item.token1?.symbol 
+          && toCurrency == item.token0?.symbol)) {
+        return true;
+      }
+    });
+    if(!pair||pair.length<1) {setLiquidity(true);return;}
+
+    setReserve0(pair[0].reserve0);
+    setReserve1(pair[0].reserve1);
+  }
+
+  const changeToCurrency = (v:string) => {
+    setLiquidity(false)
+    setToCurrency(v);
+    const pair = allPairs.filter((item) => {
+      if ((v == item.token0?.symbol 
+        && fromCurrency == item.token1?.symbol) ||
+        (v == item.token1?.symbol 
+          && fromCurrency == item.token0?.symbol)) {
+        return true;
+      }
+    });
+    if(!pair||pair.length<1){setLiquidity(true);return;}
+
+    setReserve0(pair[0].reserve0);
+    setReserve1(pair[0].reserve1);
+  }
+
+
   return (
     <div>
        <PendingModal
@@ -325,15 +363,16 @@ const Pool = () => {
         setInputValue={changeInputValue}
         fromCurrency={fromCurrency}
         exchangeRate={exchangeRate}
-        setFromCurrency={setFromCurrency}
+        setFromCurrency={changeFromCurrency}
         reserve0={reserve0}
         reserve1={reserve1}
         toCurrency={toCurrency}
-        setToCurrency={setToCurrency}
+        setToCurrency={changeToCurrency}
         outAmount={outAmount}
         changeOutAmount={changeOutAmount}
         isFetching={isFetching}   
         insufficient={insufficient}
+        liquidity={liquidity}
         onConfirmLiquidityAdd={onConfirmLiquidityAdd}
         />
     </div>

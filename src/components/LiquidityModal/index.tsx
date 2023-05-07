@@ -16,6 +16,7 @@ interface ILiquidityModalProps extends ITokenInputProps {
   reserve1: any;
   isFetching: boolean;
   insufficient: boolean;
+  liquidity: boolean;
   onConfirmLiquidityAdd: () => void;
 }
 const LiquidityModal: FC<ILiquidityModalProps> = ({
@@ -31,6 +32,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
   changeOutAmount,
   reserve0,
   reserve1,
+  liquidity,
   swapNumber,
   exchangeRate,
   isFetching,
@@ -62,6 +64,7 @@ const LiquidityModal: FC<ILiquidityModalProps> = ({
     if (!validNetwork) return "Invalid Network";
     if (insufficient) return "Insufficient Balance";
     if (isFetching) return "Calculating...";
+    if (liquidity) return "Insufficient Liquidity";
     return "Add Liquidity";
   };
 

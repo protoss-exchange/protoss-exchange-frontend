@@ -32,6 +32,7 @@ const Swap = () => {
   const [transactionHash, setTransactionHash] = useState("0x056e6f563f188890d0c3fbbfccb35f3a91c3eba62e7cddef80f5f0cd6514ac89")
   const { wallet, validNetwork, allPairs } = useContext(WalletContext);
   const [insufficient, setInsufficient] = useState(false);
+  const [liquidity, setLiquidity] = useState(false);
   const [curTimeId, setCurTimeId] = useState(0);
 
   const checkBalance = async(inputToken: Token) => {
@@ -111,6 +112,7 @@ const Swap = () => {
     if (!inputValue) return "Input An Amount";
     if (inputInvalid) return "Input Invalid";
     if (isFetching) return "Calculating...";
+    if (liquidity) return "Insufficient Liquidity";
     return "Swap";
   };
 
@@ -192,6 +194,35 @@ const Swap = () => {
     checkBalance(inputToken);
   }
 
+  const changeFromCurrency = (v:string) => {
+    setLiquidity(false)
+    setFromCurrency(v);
+    const pair = allPairs.filter((item) => {
+      if ((v == item.token0?.symbol 
+        && toCurrency == item.token1?.symbol) ||
+        (v == item.token1?.symbol 
+          && toCurrency == item.token0?.symbol)) {
+        return true;
+      }
+    });
+    if(!pair||pair.length<1) setLiquidity(true);
+  }
+
+  const changeToCurrency = (v:string) => {
+    setLiquidity(false)
+    setToCurrency(v);
+    const pair = allPairs.filter((item) => {
+      if ((v == item.token0?.symbol 
+        && fromCurrency == item.token1?.symbol) ||
+        (v == item.token1?.symbol 
+          && fromCurrency == item.token0?.symbol)) {
+        return true;
+      }
+    });
+    if(!pair||pair.length<1) setLiquidity(true);
+  }
+
+
   return (
     <div>
       <PendingModal
@@ -210,9 +241,9 @@ const Swap = () => {
           inputValue={inputValue}
           setInputValue={changeInputValue}
           fromCurrency={fromCurrency}
-          setFromCurrency={setFromCurrency}
+          setFromCurrency={changeFromCurrency}
           toCurrency={toCurrency}
-          setToCurrency={setToCurrency}
+          setToCurrency={changeToCurrency}
           outAmount={outAmount}
           changeOutAmount={changeOutAmount}
           swapNumber={swapNumber}
