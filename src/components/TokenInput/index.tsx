@@ -6,6 +6,8 @@ import { FC, useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../context/WalletContext";
 import { getBalance } from "../../services/balances.service";
 import { SwapOutlined } from "@ant-design/icons";
+import { ChainId, Token } from "protoss-exchange-sdk";
+import { StarknetChainId } from "enums";
 export interface ITokenInputProps {
   inputValue: string;
   setInputValue: (v: string) => void;
@@ -142,9 +144,9 @@ const TokenInput: FC<ITokenInputProps> = ({
         />
          <div className={styles.fromCurrencySelectContainer}>
         <Select
-          value={toCurrency}
+          value={toCurrency==""?undefined:toCurrency}
           onSelect={setToCurrency}
-          placeholder={"Select"}
+          placeholder={"Select Token"}
         >
           {tokens[getChain()].map((item) => (
             <Option
