@@ -144,6 +144,7 @@ const TokenInput: FC<ITokenInputProps> = ({
         />
          <div className={styles.fromCurrencySelectContainer}>
         <Select
+          style={{width:'141px'}}
           value={toCurrency==""?undefined:toCurrency}
           onSelect={setToCurrency}
           placeholder={"Select Token"}
