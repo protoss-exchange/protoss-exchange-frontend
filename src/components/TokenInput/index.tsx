@@ -1,13 +1,12 @@
 import styles from "./index.module.css";
 import { Input, Select, Tooltip, Typography } from "antd";
 import { tokens } from "enums/tokens";
-import { getChain } from "utils";
+import { getChain, getSymbolLogo } from "utils";
 import { FC, useContext, useEffect, useState } from "react";
 import { WalletContext } from "../../context/WalletContext";
 import { getBalance } from "../../services/balances.service";
 import { SwapOutlined } from "@ant-design/icons";
-import { ChainId, Token } from "protoss-exchange-sdk";
-import { StarknetChainId } from "enums";
+
 export interface ITokenInputProps {
   inputValue: string;
   setInputValue: (v: string) => void;
@@ -62,7 +61,6 @@ const TokenInput: FC<ITokenInputProps> = ({
     }
   }, [wallet, fromCurrency]);
 
-
   useEffect(() => {
     if (wallet) {
       getBalance(
@@ -97,7 +95,11 @@ const TokenInput: FC<ITokenInputProps> = ({
                 value={item.symbol}
                 disabled={item.symbol === toCurrency}
               >
-                {item.name}
+                <div className={styles.optionDiv}>
+                  <img style={{width:'18px',height:'18px'}} src={getSymbolLogo(item.symbol?item.symbol:"")}></img>
+                  <div style={{width: '4px'}}></div>
+                  <div className={styles.optionText}>{item.name}</div>
+                </div>
               </Option>
             ))}
           </Select>
@@ -161,7 +163,11 @@ const TokenInput: FC<ITokenInputProps> = ({
               value={item.symbol}
               disabled={item.symbol === fromCurrency}
             >
-              {item.name}
+               <div className={styles.optionDiv}>
+                  <img style={{width:'18px',height:'18px'}} src={getSymbolLogo(item.symbol?item.symbol:"")}></img>
+                  <div style={{width: '4px'}}></div>
+                  <div className={styles.optionText}>{item.name}</div>
+                </div>
             </Option>
           ))}
         </Select>

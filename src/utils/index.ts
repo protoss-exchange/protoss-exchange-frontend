@@ -3,6 +3,11 @@ import { ChainId, Token } from "protoss-exchange-sdk";
 import tokens from "enums/tokens";
 import { StarknetWindowObject } from "get-starknet";
 import { PairInfo } from "../services/pool.service";
+import usdtLogo from "assets/usdt.png";
+import ethLogo from 'assets/eth.png';
+import usdcLogo from 'assets/usdc.png';
+import daiLogo from 'assets/dai.png';
+
 const { REACT_APP_CHAIN_ID: CHAIN_ID } = process.env;
 export function isEqualsAddress(addressA: string, addressB: string): boolean {
   return toBN(addressA).eq(toBN(addressB));
@@ -37,8 +42,9 @@ export function confirmNetwork(wallet: StarknetWindowObject) {
   return CHAIN_ID === "MAINNET" && chainId === ChainId.MAINNET;
 }
 export function inCorrectNetwork(network: string) {
-  if (CHAIN_ID === "TESTNET" && network.includes("goerli")) return true;
-  return CHAIN_ID === "MAINNET" && network.includes("mainnet");
+  if (!network) {return false;}
+  if (CHAIN_ID === "TESTNET" && network.toLowerCase().includes("goerli")) return true;
+  return CHAIN_ID === "MAINNET" && network.toLowerCase().includes("main");
 }
 
 export function targetNetwork() {
@@ -110,5 +116,15 @@ export function getStarkscanLink(data: string, type: 'transaction' | 'block' | '
     default: {
       return `${prefix}/contract/${data}`
     }
+  }
+}
+
+export function getSymbolLogo(symbol:string) {
+  switch(symbol?.toLowerCase()) {
+    case 'usdt': return usdtLogo;
+    case 'usdc': return usdcLogo;
+    case 'eth': return ethLogo;
+    case 'dai': return daiLogo;
+    default: return ethLogo;
   }
 }

@@ -7,6 +7,8 @@ import bigDecimal from "js-big-decimal";
 import { hexToDecimalString } from "starknet/utils/number";
 import { useUpdateReserves } from "hooks/useUpdateReserves";
 import Withdraw from "components/Withdraw";
+import { getSymbolLogo } from "utils";
+
 const cx = classNames.bind(styles);
 interface IMyPoolItem {
   poolTokens: string;
@@ -80,9 +82,17 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
       )}
     >
       <div className={styles.poolSymbol}>
-        <span>
-          {token0Symbol} - {token1Symbol}
-        </span>
+        <div className={styles.poolContainer}>
+          <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token0Symbol)}></img>
+          <div style={{width: '5px'}}></div>
+          <span>{token0Symbol}</span>
+          <div style={{width: '9px'}}></div>
+          <span>-</span>
+          <div style={{width: '9px'}}></div>
+          <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token0Symbol)}></img>
+          <div style={{width: '5px'}}></div>
+          <span>{token1Symbol}</span>
+        </div>
         <Button onClick={handleExpandBtnClick}>
           {expanded ? "Collapse" : "Expand"}
         </Button>

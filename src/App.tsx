@@ -1,11 +1,9 @@
 import React, { lazy, useEffect, useState } from "react";
-import { ConfigProvider } from "antd";
 import "./App.less";
 import { PageLayout } from "components";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Swap from "pages/Swap";
 import Pool from "pages/Pool";
-import Wip from "./pages/Wip";
 import { WalletContext } from "context/WalletContext";
 import { StarknetWindowObject } from "get-starknet";
 import { getAllPoolPairs, PairInfo } from "./services/pool.service";
@@ -39,7 +37,6 @@ function App() {
       >
         <Switch>
           <PageLayout>
-            {/*<Route path='/' exact component={Wip} />*/}
             <Route path="/" exact component={Swap} />
             <Route path="/pool" exact component={Pool} />
           </PageLayout>

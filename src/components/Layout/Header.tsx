@@ -10,6 +10,7 @@ import logo from "assets/logo192.png";
 export const Header = () => {
   const location = useLocation();
   const history = useHistory();
+  
   const { setWallet, wallet, validNetwork, setValidNetwork } =
     useContext(WalletContext);
   const [walletAddress, setWalletAddress] = useState("");
@@ -18,6 +19,7 @@ export const Header = () => {
       modalMode: "alwaysAsk",
     });
     if (!wallet) return;
+    setWalletAddress(walletAddress);
     setWallet(wallet);
   };
   const handleDisconnect = async () => {
@@ -40,6 +42,8 @@ export const Header = () => {
     });
     setValidNetwork(confirmNetwork(wallet));
     walletService.onNetworkChange((network) => {
+      console.log("on network change:", network);
+      if (!network) {return;}
       walletService.connectToWallet({ modalMode: "neverAsk" });
       if (inCorrectNetwork(network)) {
         setValidNetwork(true);
@@ -90,6 +94,9 @@ export const Header = () => {
             {route.name}
           </div>
         ))}
+        <div className={styles.headerItem}>
+          <a href="https://starkgate.starknet.io/" style={{color: 'red'}} target="_blank"> Bridge </a>
+        </div>
       </div>
       {walletStatus()}
     </div>

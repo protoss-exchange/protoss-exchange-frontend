@@ -10,5 +10,5 @@ export const routes = [
   {
     name: "Pool",
     path: "/Pool",
-  },
+  }
 ];

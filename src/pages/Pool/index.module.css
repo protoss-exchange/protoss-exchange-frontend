@@ -5,6 +5,13 @@
     font-weight: 600;
 }
 
+.poolContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+}
+
 .poolsBtn > button {
     margin-right: 8px;
     border-radius: 8px;
