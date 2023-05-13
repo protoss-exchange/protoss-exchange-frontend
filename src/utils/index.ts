@@ -119,7 +119,7 @@ export function getStarkscanLink(data: string, type: 'transaction' | 'block' | '
   }
 }
 
-export function getSymbolLogo(symbol:string) {
+export function getSymbolLogo(symbol: any) {
   switch(symbol?.toLowerCase()) {
     case 'usdt': return usdtLogo;
     case 'usdc': return usdcLogo;

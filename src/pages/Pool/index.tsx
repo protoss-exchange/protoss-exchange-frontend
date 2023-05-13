@@ -16,7 +16,7 @@ import { useUpdateReserves } from "hooks/useUpdateReserves";
 import Slippage from "../../components/Slippage";
 import { LoadingOutlined } from "@ant-design/icons";
 import tokens from "enums/tokens";
-import { getChain, isAmountZero } from "utils";
+import { getChain, getSymbolLogo, isAmountZero } from "utils";
 import { Token } from "protoss-exchange-sdk";
 import { getBalance } from "services/balances.service";
 import ConfirmModal from "components/ConfirmModal";
@@ -120,9 +120,17 @@ const Pool = () => {
       render: (_, record: PairInfo) => {
         const { token0, token1 } = record;
         return (
-          <span>
-            {token0?.symbol} - {token1?.symbol}
-          </span>
+           <div className={styles.poolContainer}>
+           <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token0?.symbol)}></img>
+           <div style={{width: '5px'}}></div>
+           <span>{token0?.symbol}</span>
+           <div style={{width: '9px'}}></div>
+           <span>-</span>
+           <div style={{width: '9px'}}></div>
+           <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token1?.symbol)}></img>
+           <div style={{width: '5px'}}></div>
+           <span>{token1?.symbol}</span>
+         </div>
         );
       },
     },
@@ -186,12 +194,27 @@ const Pool = () => {
           <LoadingOutlined style={{ fontSize: 32 }} />
         </div>
       );
+    if (!myPools || myPools.length < 1)
+      return (
+        <div
+          className={styles.myPoolItemContainer}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: 16,
+          }}
+        >
+          No data
+        </div>
+      )
+
     return myPools.map((pair) => (
       <MyPoolItem
         key={pair.address}
         poolTokens={pair?.balances || "0"}
-        token0Symbol={pair.token0?.symbol || "TOA"}
-        token1Symbol={pair.token1?.symbol || "TOB"}
+        token0Symbol={pair.token0?.symbol || "ETH"}
+        token1Symbol={pair.token1?.symbol || "USDC"}
         onAddLiquidity={() => onAdd(pair)}
         pair={pair}
         withdrawSlippage={withdrawSlippage}

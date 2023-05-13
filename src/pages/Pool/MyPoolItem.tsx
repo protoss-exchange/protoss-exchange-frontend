@@ -89,7 +89,7 @@ export const MyPoolItem: FC<IMyPoolItem> = ({
           <div style={{width: '9px'}}></div>
           <span>-</span>
           <div style={{width: '9px'}}></div>
-          <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token0Symbol)}></img>
+          <img style={{width:'19px',height:'19px'}} src={getSymbolLogo(token1Symbol)}></img>
           <div style={{width: '5px'}}></div>
           <span>{token1Symbol}</span>
         </div>
