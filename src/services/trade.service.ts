@@ -176,7 +176,7 @@ export const onSwapToken = async (
         entrypoint: "approve",
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         contractAddress: fromCurrency.address,
-        calldata: [ROUTER_ADDRESSES[getChain()], 10000, 10],
+        calldata: [ROUTER_ADDRESSES[getChain()], uint256Input.low, uint256Input.high],
       },
       {
         entrypoint: "swapExactTokensForTokens",

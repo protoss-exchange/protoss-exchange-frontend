@@ -272,14 +272,14 @@ export const addLiquidity = async (
     {
       entrypoint: "approve",
       contractAddress: tokenA.address,
-      // calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
-      calldata: [ROUTER_ADDRESSES[getChain()], uint256Input.low, 10],
+      calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
+      //calldata: [ROUTER_ADDRESSES[getChain()], uint256Input.low, 10],
     },
     {
       entrypoint: "approve",
       contractAddress: tokenB.address,
-      // calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
-      calldata: [ROUTER_ADDRESSES[getChain()], uint256Output.low, 10],
+      calldata: [ROUTER_ADDRESSES[getChain()], 9999999999, 10],
+      //calldata: [ROUTER_ADDRESSES[getChain()], uint256Output.low, 10],
     },
     {
       entrypoint: "addLiquidity",
